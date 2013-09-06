@@ -26,7 +26,7 @@ void Introduce()
 
   cout << "ChangeString() allows you to change the initial character set"<< endl;
 
-  cout << "Output() Prints current stage of string"<< endl;
+  cout << "OutputString() Prints current stage of string"<< endl;
 
 }
 
@@ -39,13 +39,13 @@ void ChangeString( TString s2 )
 
 
 }
-void Output()
+void OutputString()
 {
 
     cout << "      String set to: "<< s << endl;
 
 }
-void Derivation(Int_t run_number)
+void DerivationString(Int_t run_number)
 {
 
   TString sd = "";
@@ -79,15 +79,15 @@ void Derivation(Int_t run_number)
 }
 void LSysTree()
 {
-
-
-    Int_t n=10; //Number of derivations
+    Introduce();
+    Int_t n=3; //Number of derivations
+    
     TString foutname = "run_000";
     TString fextension = ".root";
     for (Int_t i=0; i < n; i++) {
 
         cout << "Run Number: "<< i << endl;
-        Output();
+        OutputString();
       // Num is assigned for filename and then added into the string, works for up to 99 installments
         const char* num;
         num = Form( "%d", i);
@@ -97,8 +97,8 @@ void LSysTree()
 
         WriteTree( fout, i);
 
-        //Runs String Derivation
-        Derivation(i);
+        //Runs String DerivationString
+        DerivationString(i);
 
 	
 
@@ -110,6 +110,7 @@ void LSysTree()
 void WriteTree(const char* filename, const Int_t run_number)
 {
 
+  //Loads the string and fills in the tree using built in rules
     TFile *f = new TFile(filename,"recreate");
     TTree *T = new TTree("Tnodes","Tree Structure");
 
@@ -152,18 +153,18 @@ void WriteTree(const char* filename, const Int_t run_number)
          Event ++;
          Leaf = 0;
          T->Fill();
-         x = x + 1*( step*sin(theta)*cos(phi));
-         y = y + 1*( step*sin(theta)*sin(phi));
-         z = z + 1*( step*cos(theta) );
+         x = x + step*( sin(theta)*cos(phi) );
+         y = y + step*( sin(theta)*sin(phi) );
+         z = z + step*( cos(theta) );
       }
       if(s[i]=='0')
       {
          Event ++;
          Leaf = 1;
          T->Fill();
-         x = x + 1*( step*sin(theta)*cos(phi));
-         y = y + 1*( step*sin(theta)*sin(phi));
-         z = z + 1*( step*cos(theta) );
+         x = x + step*( sin(theta)*cos(phi));
+         y = y + step*( sin(theta)*sin(phi));
+         z = z + step*( cos(theta) );
       }
 
       if(s[i]=='[')
@@ -178,7 +179,7 @@ void WriteTree(const char* filename, const Int_t run_number)
           pphi[push_position] = phi;
 
           //Turn Left 45 degrees (0.785398163 radians)
-          theta += -0.785398163;
+          theta += -branchangle;
       }
       if(s[i]==']')
       {
@@ -193,7 +194,7 @@ void WriteTree(const char* filename, const Int_t run_number)
 
 
           //Turn Right 45 degrees (0.785398163 radians)
-          theta += 0.785398163;
+          theta += branchangle;
       }
 
 
@@ -230,30 +231,31 @@ void Browser()
 }
 
 //Drawing Commands
-void DrawNodesXZ(const char* fname)
+void DrawNodes2D(const char* fname, const char* vars)
 {
     TFile *f = new TFile(fname);
     TTree *T = (TTree*)f->Get("Tnodes");
 
-    T->Draw("z:x","","");
+    T->Draw(vars,"","goff");
+    Double_t *var2 = T->GetV2();
+    Double_t *var1 = T->GetV1();
+    
+    TGraph *gr = new TGraph(T->GetEntries());
+    
+    for (Int_t i=0; i<T->GetEntries(); i++) {
+	  gr->SetPoint(i,var1[i],var2[i]);
+    }
+    
+    
+    
+    
+    TCanvas *c1 = new TCanvas("c1","Graph Draw Options",200,10,600,400);
+    
+    gr->Draw("AL*");
+    
 
 }
-void DrawNodesYZ(const char* fname)
-{
-    TFile *f = new TFile(fname);
-    TTree *T = (TTree*)f->Get("Tnodes");
 
-    T->Draw("z:y","","");
-
-}
-void DrawNodesXY(const char* fname)
-{
-    TFile *f = new TFile(fname);
-    TTree *T = (TTree*)f->Get("Tnodes");
-
-    T->Draw("y:x","","");
-
-}
 
 void WorldDraw()
 {
