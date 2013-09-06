@@ -1,0 +1,714 @@
+<?xml version="1.0"?>
+<root setup="2xoo" ref="null" created="2013-07-05 10:04:18" modified="2013-07-05 10:04:18" uuid="dfdbf808-e551-11e2-9717-e217cd89beef" version="2">
+  <XmlKey name="histparams" cycle="1" created="2013-07-05 10:04:18">
+    <Object class="TObjArray">
+      <Version v="3"/>
+      <Version v="1"/>
+      <UInt_t v="0"/>
+      <UInt_t v="50331648"/>
+      <UChar_t v="0"/>
+      <Int_t v="49"/>
+      <Int_t v="0"/>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="AbnLost"/>
+          <fHTitle str="distance (cm) travelled by photons abnormally lost"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="AbsAny"/>
+          <fHTitle str="distance (cm) travelled by photons absorbed anywhere"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="AbsBef"/>
+          <fHTitle str="distance (cm) of photons absorbed before wrapping"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="AbsMat"/>
+          <fHTitle str="distance (cm) travelled by photons absorbed in material"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="AbsRvt"/>
+          <fHTitle str="distance (cm) of photons absorbed by wrapping"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1"/>
+          <fHName str="Depth_"/>
+          <fHTitle str=""/>
+          <fHNbinsx v="200"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="5.000000e-03"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="Diffusion"/>
+          <fHTitle str="Number of diffusions per photon"/>
+          <fHNbinsx v="16"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="1.600000e+01"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="DistSeen"/>
+          <fHTitle str="distance (cm) travelled by photons seen in detector"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH2F"/>
+          <fHName str="EinShape"/>
+          <fHTitle str="Energy [Mev] deposited by gamma in all shapes"/>
+          <fHNbinsx v="1"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="1.000000e+01"/>
+          <fHNbinsy v="50"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="1.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_AbnLost"/>
+          <fHTitle str="distance (cm) travelled by photons abnormally lost"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_AbsAny"/>
+          <fHTitle str="distance (cm) travelled by photons absorbed anywhere"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_AbsBef"/>
+          <fHTitle str="distance (cm) of photons absorbed before wrapping"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_AbsMat"/>
+          <fHTitle str="distance (cm) travelled by photons absorbed in material"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_AbsRvt"/>
+          <fHTitle str="distance (cm) of photons absorbed by wrapping"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_Diffusion"/>
+          <fHTitle str="Number of diffusions per photon"/>
+          <fHNbinsx v="16"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="1.600000e+01"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_DistSeen"/>
+          <fHTitle str="distance (cm) travelled by photons seen in detector"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH2F"/>
+          <fHName str="G_EinShape"/>
+          <fHTitle str="Energy [Mev] deposited by gamma in all shapes"/>
+          <fHNbinsx v="1"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="1.000000e+00"/>
+          <fHNbinsy v="50"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="1.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_Momentum"/>
+          <fHTitle str="Momentum [Gev/c] of generated particles"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="1.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_OutSide"/>
+          <fHTitle str="distance (cm) travelled by photons leaving the setup"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_Points"/>
+          <fHTitle str="Number of points on photon trajectory"/>
+          <fHNbinsx v="250"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.500000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_Theta"/>
+          <fHTitle str="Theta distribution of generated particles"/>
+          <fHNbinsx v="80"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="3.200000e+00"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_TimeAll"/>
+          <fHTitle str="Generated time (ps) for all components"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.000000e+05"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_TimeCer"/>
+          <fHTitle str="Generated time (ps) for Cerenkov photons"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.000000e+05"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH2F"/>
+          <fHName str="G_TimeEach"/>
+          <fHTitle str="Generated time for each component"/>
+          <fHNbinsx v="64"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.000000e+05"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_TimeSeen"/>
+          <fHTitle str="time of arrival (ps) of photons on detector"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.000000e+05"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_TooLate"/>
+          <fHTitle str="Wavelength of photons seen, but too late"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="7.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_WvlgthAll"/>
+          <fHTitle str="Generated wavelength (nm) for all components"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="2.500000e+03"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_WvlgthCer"/>
+          <fHTitle str="Generated wavelength (nm) for Cerenkov photons"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="7.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH2F"/>
+          <fHName str="G_WvlgthEach"/>
+          <fHTitle str="Generated wavelength (nm) for each component"/>
+          <fHNbinsx v="64"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="2.500000e+03"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="G_WvlgthSeen"/>
+          <fHTitle str="Wavelength (nm) of photons seen"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="2.500000e+03"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1"/>
+          <fHName str="Inside_"/>
+          <fHTitle str=""/>
+          <fHNbinsx v="200"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="7.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="Momentum"/>
+          <fHTitle str="Momentum [Gev/c] of generated particles"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="1.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="OutSide"/>
+          <fHTitle str="distance (cm) travelled by photons leaving the setup"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="4.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="Points"/>
+          <fHTitle str="Number of points on photon trajectory"/>
+          <fHNbinsx v="250"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.500000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1"/>
+          <fHName str="QEff_"/>
+          <fHTitle str=""/>
+          <fHNbinsx v="200"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="2.500000e+03"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="Theta"/>
+          <fHTitle str="Theta distribution of generated particles"/>
+          <fHNbinsx v="80"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="3.200000e+00"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="TimeAll"/>
+          <fHTitle str="Generated time (ps) for all components"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.000000e+05"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="TimeCer"/>
+          <fHTitle str="Generated time (ps) for Cerenkov photons"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.000000e+05"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH2F"/>
+          <fHName str="TimeEach"/>
+          <fHTitle str="Generated time for each component"/>
+          <fHNbinsx v="64"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.000000e+05"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="TimeSeen"/>
+          <fHTitle str="time of arrival (ps) of photons on detector"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.000000e+05"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1"/>
+          <fHName str="TimeSeen_"/>
+          <fHTitle str=""/>
+          <fHNbinsx v="200"/>
+          <fHXlow v="0.000000e+00"/>
+          <fHXup v="2.000000e+05"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="TooLate"/>
+          <fHTitle str="Wavelength of photons seen, but too late"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="2.500000e+03"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="WvlgthAll"/>
+          <fHTitle str="Generated wavelength (nm) for all components"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="2.500000e+03"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="WvlgthCer"/>
+          <fHTitle str="Generated wavelength (nm) for Cerenkov photons"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="7.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH2F"/>
+          <fHName str="WvlgthEach"/>
+          <fHTitle str="Generated wavelength (nm) for each component"/>
+          <fHNbinsx v="64"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="2.500000e+03"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1"/>
+          <fHName str="WvlgthNot_"/>
+          <fHTitle str=""/>
+          <fHNbinsx v="200"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="2.500000e+03"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1D"/>
+          <fHName str="WvlgthSeen"/>
+          <fHTitle str="Wavelength (nm) of photons seen"/>
+          <fHNbinsx v="100"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="2.500000e+03"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH1"/>
+          <fHName str="WvlgthSeen_"/>
+          <fHTitle str=""/>
+          <fHNbinsx v="200"/>
+          <fHXlow v="2.000000e+02"/>
+          <fHXup v="7.000000e+02"/>
+          <fHNbinsy v="0"/>
+          <fHYlow v="0.000000e+00"/>
+          <fHYup v="0.000000e+00"/>
+        </TLitHistParams>
+      </Object>
+      <Object class="TLitHistParams">
+        <TLitHistParams version="1">
+          <TObject fUniqueID="0" fBits="3000000"/>
+          <fHKind str="TH2"/>
+          <fHName str="XYEntrance_"/>
+          <fHTitle str=""/>
+          <fHNbinsx v="40"/>
+          <fHXlow v="-1.000000e-01"/>
+          <fHXup v="1.000000e-01"/>
+          <fHNbinsy v="40"/>
+          <fHYlow v="-1.000000e-01"/>
+          <fHYup v="1.000000e-01"/>
+        </TLitHistParams>
+      </Object>
+    </Object>
+  </XmlKey>
+  <StreamerInfos>
+    <TStreamerInfo name="TLitHistParams" title="" v="9" classversion="1" canoptimize="true" checksum="1382019457">
+      <TStreamerBase name="TObject" title="Basic ROOT object" v="3" type="66" typename="BASE" size="16" baseversion="1"/>
+      <TStreamerString name="fHKind" title="TH1C, TH1F, TH1D, TH2C, TH2F, TH2D, ... TGraphErrors" v="2" type="65" typename="TString" size="24"/>
+      <TStreamerString name="fHName" title="Name of histogram or TGraph" v="2" type="65" typename="TString" size="24"/>
+      <TStreamerString name="fHTitle" title="Title of histogram or TGraph" v="2" type="65" typename="TString" size="24"/>
+      <TStreamerBasicType name="fHNbinsx" title="Number of bins in x" v="2" type="3" typename="Int_t" size="4"/>
+      <TStreamerBasicType name="fHXlow" title="Left of 1st bin in x" v="2" type="8" typename="Double_t" size="8"/>
+      <TStreamerBasicType name="fHXup" title="Right of last bin in x" v="2" type="8" typename="Double_t" size="8"/>
+      <TStreamerBasicType name="fHNbinsy" title="Number of bins in y" v="2" type="3" typename="Int_t" size="4"/>
+      <TStreamerBasicType name="fHYlow" title="Left of 1st bin in y" v="2" type="8" typename="Double_t" size="8"/>
+      <TStreamerBasicType name="fHYup" title="Right of last bin in y" v="2" type="8" typename="Double_t" size="8"/>
+    </TStreamerInfo>
+  </StreamerInfos>
+</root>
