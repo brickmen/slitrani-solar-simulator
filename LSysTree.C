@@ -18,6 +18,7 @@ Float_t branchangle = 45.0;
 TString s = "0";
 
 
+
 void Introduce()
 {
   cout << "Welcome to LSysTree an L-System Generator for a Vector Node Tree"<< endl;
@@ -131,7 +132,7 @@ void WriteTree(const char* filename, const Int_t run_number)
     Float_t *pz[run_number]= {};
     Float_t *ptheta[run_number]= {};
     Float_t *pphi[run_number]= {};
-    cout  << "  Array MAX:" << run_number << endl;
+
     Int_t push_position = -1;
 
     //Initial Set of positions
