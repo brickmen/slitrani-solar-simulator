@@ -237,6 +237,7 @@ void DrawNodes2D(const char* fname, const char* vars)
     TFile *f = new TFile(fname);
     TTree *T = (TTree*)f->Get("Tnodes");
 
+    //Drawing Branch Nodes
     T->Draw(vars,"","goff");
     Double_t *var2 = T->GetV2();
     Double_t *var1 = T->GetV1();
@@ -246,6 +247,8 @@ void DrawNodes2D(const char* fname, const char* vars)
     for (Int_t i=0; i<T->GetEntries(); i++) {
 	  gr->SetPoint(i,var1[i],var2[i]);
     }
+
+
     
     
     
