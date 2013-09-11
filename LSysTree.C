@@ -13,10 +13,9 @@ Float_t x,y,z;
 Float_t theta, phi;
 
 Float_t step = 1.0;
-Float_t branchangle = 45.0;
+Float_t branchangle = 0.785398163; //45 degrees in rads
 
 TString s = "0";
-
 
 
 void Introduce()
@@ -36,7 +35,6 @@ void ChangeString( TString s2 )
 
   s.Remove(0,s.Length());
   s.Replace(0,1,s2);
-  cout << "       Next String set to: "<< s << endl;
 
 
 }
@@ -132,7 +130,6 @@ void WriteTree(const char* filename, const Int_t run_number)
     Float_t *pz[run_number]= {};
     Float_t *ptheta[run_number]= {};
     Float_t *pphi[run_number]= {};
-
     Int_t push_position = -1;
 
     //Initial Set of positions
@@ -142,30 +139,35 @@ void WriteTree(const char* filename, const Int_t run_number)
     theta = 0;
     phi = 0;
     Event = 0 ;
+    Leaf = 0 ;
+    T->Fill();
 
     // Loop over n entries and fill the tree:
     // This is the Axiom
     for (Int_t i=0; i < n; i++) {
       Run = run_number;
 
+      cout << "String No:"<< i << "  PPosition: " << push_position << endl;
 
       if(s[i]=='1')
       {
          Event ++;
          Leaf = 0;
-         T->Fill();
+         
          x = x + step*( sin(theta)*cos(phi) );
          y = y + step*( sin(theta)*sin(phi) );
          z = z + step*( cos(theta) );
+	 T->Fill();
       }
       if(s[i]=='0')
       {
          Event ++;
          Leaf = 1;
-         T->Fill();
+         
          x = x + step*( sin(theta)*cos(phi));
          y = y + step*( sin(theta)*sin(phi));
          z = z + step*( cos(theta) );
+	 T->Fill();
       }
 
       if(s[i]=='[')
@@ -174,6 +176,7 @@ void WriteTree(const char* filename, const Int_t run_number)
           //Push Position
           push_position ++;
           px[push_position] = x;
+	  cout << "  PPosition X store " << px[push_position] << endl;
           py[push_position] = y;
           pz[push_position] = z;
           ptheta[push_position] = theta;
@@ -187,6 +190,7 @@ void WriteTree(const char* filename, const Int_t run_number)
           //Pop Position
 
           x = px[push_position];
+	  cout << "  PPosition X out " << &px[push_position] << endl;
           y = py[push_position];
           z = pz[push_position];
           theta = ptheta[push_position];
@@ -237,25 +241,19 @@ void DrawNodes2D(const char* fname, const char* vars)
     TFile *f = new TFile(fname);
     TTree *T = (TTree*)f->Get("Tnodes");
 
-    //Drawing Branch Nodes
     T->Draw(vars,"","goff");
     Double_t *var2 = T->GetV2();
     Double_t *var1 = T->GetV1();
     
-    TGraph *gr = new TGraph(T->GetEntries());
+    //Draws The branches ending in another node
+    TGraph *tr = new TGraph(T->GetEntries());
     
     for (Int_t i=0; i<T->GetEntries(); i++) {
-	  gr->SetPoint(i,var1[i],var2[i]);
+	  tr->SetPoint(i,var1[i],var2[i]);
     }
-
-
     
     
-    
-    
-    TCanvas *c1 = new TCanvas("c1","Graph Draw Options",200,10,600,400);
-    
-    gr->Draw("AL*");
+    tr->Draw("AC*");
     
 
 }
