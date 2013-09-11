@@ -147,7 +147,7 @@ void WriteTree(const char* filename, const Int_t run_number)
     for (Int_t i=0; i < n; i++) {
       Run = run_number;
 
-      cout << "String No:"<< i << "  PPosition: " << push_position << endl;
+      
 
       if(s[i]=='1')
       {
@@ -175,9 +175,9 @@ void WriteTree(const char* filename, const Int_t run_number)
 
           //Push Position
           push_position ++;
-	  cout << "  X to store " << x << endl;
+	 
           px[push_position] = x;
-	  cout << "  PPosition X store " << px[push_position] << endl;
+	
           py[push_position] = y;
           pz[push_position] = z;
           ptheta[push_position] = theta;
@@ -191,7 +191,7 @@ void WriteTree(const char* filename, const Int_t run_number)
           //Pop Position
 
           x = px[push_position];
-	  cout << "  PPosition X out " << px[push_position] << endl;
+	 
           y = py[push_position];
           z = pz[push_position];
           theta = ptheta[push_position];
