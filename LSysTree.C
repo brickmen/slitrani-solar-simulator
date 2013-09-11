@@ -79,7 +79,7 @@ void DerivationString(Int_t run_number)
 void LSysTree()
 {
     Introduce();
-    Int_t n=3; //Number of derivations
+    Int_t n=6; //Number of derivations
     
     TString foutname = "run_000";
     TString fextension = ".root";
@@ -125,11 +125,11 @@ void WriteTree(const char* filename, const Int_t run_number)
     Int_t n=s.Length();   // Number of Characters to read
 
     //Temporary variables for position push MAX needed in array is equal to run number
-    Float_t *px[run_number] = {};
-    Float_t *py[run_number]= {};
-    Float_t *pz[run_number]= {};
-    Float_t *ptheta[run_number]= {};
-    Float_t *pphi[run_number]= {};
+    Float_t px[run_number] = {};
+    Float_t py[run_number]= {};
+    Float_t pz[run_number]= {};
+    Float_t ptheta[run_number]= {};
+    Float_t pphi[run_number]= {};
     Int_t push_position = -1;
 
     //Initial Set of positions
@@ -175,6 +175,7 @@ void WriteTree(const char* filename, const Int_t run_number)
 
           //Push Position
           push_position ++;
+	  cout << "  X to store " << x << endl;
           px[push_position] = x;
 	  cout << "  PPosition X store " << px[push_position] << endl;
           py[push_position] = y;
@@ -190,7 +191,7 @@ void WriteTree(const char* filename, const Int_t run_number)
           //Pop Position
 
           x = px[push_position];
-	  cout << "  PPosition X out " << &px[push_position] << endl;
+	  cout << "  PPosition X out " << px[push_position] << endl;
           y = py[push_position];
           z = pz[push_position];
           theta = ptheta[push_position];
@@ -253,7 +254,7 @@ void DrawNodes2D(const char* fname, const char* vars)
     }
     
     
-    tr->Draw("AC*");
+    tr->Draw("A*");
     
 
 }
