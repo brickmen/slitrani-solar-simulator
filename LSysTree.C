@@ -12,8 +12,9 @@ Int_t Run, Event, Leaf;
 Float_t x,y,z;
 Float_t theta, phi;
 
-Float_t step = 1.0;
-Float_t branchangle = 0.785398163; //45 degrees in rads
+Float_t step = 1.0; //Length of steps
+Float_t branchangle = 0.448549618; //divergent angle in rads
+Int_t symmetry = 3; //Number of sides that branching takes place
 
 TString s = "X";
 
@@ -87,7 +88,7 @@ void DerivationString(Int_t run_number)
 void LSysTree()
 {
     Introduce();
-    Int_t n=6; //Number of derivations
+    Int_t n=7; //Number of derivations
     
     TString foutname = "run_000";
     TString fextension = ".root";
