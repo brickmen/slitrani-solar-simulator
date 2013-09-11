@@ -15,7 +15,7 @@ Float_t theta, phi;
 Float_t step = 1.0;
 Float_t branchangle = 0.785398163; //45 degrees in rads
 
-TString s = "0";
+TString s = "X";
 
 
 void Introduce()
@@ -54,13 +54,13 @@ void DerivationString(Int_t run_number)
   for(i = 0; i <= s.Length(); i++)
   {
 
-    if(s[i] == '1')
+    if(s[i] == 'F')
     {
-     sd += "11";
+     sd += "FF";
     }
-    if(s[i] == '0')
+    if(s[i] == 'X')
     {
-     sd += "1[0]0";
+     sd += "F[+X][-X]FX";
     }
     if(s[i] == '[')
     {
@@ -69,6 +69,14 @@ void DerivationString(Int_t run_number)
     if(s[i] == ']')
     {
      sd += "]";
+    }
+    if(s[i] == '+')
+    {
+     sd += "+";
+    }
+    if(s[i] == '-')
+    {
+     sd += "-";
     }
 
   }
@@ -147,9 +155,7 @@ void WriteTree(const char* filename, const Int_t run_number)
     for (Int_t i=0; i < n; i++) {
       Run = run_number;
 
-      
-
-      if(s[i]=='1')
+      if(s[i]=='F')
       {
          Event ++;
          Leaf = 0;
@@ -159,7 +165,7 @@ void WriteTree(const char* filename, const Int_t run_number)
          z = z + step*( cos(theta) );
 	 T->Fill();
       }
-      if(s[i]=='0')
+      if(s[i]=='X')
       {
          Event ++;
          Leaf = 1;
@@ -183,8 +189,6 @@ void WriteTree(const char* filename, const Int_t run_number)
           ptheta[push_position] = theta;
           pphi[push_position] = phi;
 
-          //Turn Left 45 degrees (0.785398163 radians)
-          theta += -branchangle;
       }
       if(s[i]==']')
       {
@@ -199,8 +203,17 @@ void WriteTree(const char* filename, const Int_t run_number)
           push_position --;
 
 
-          //Turn Right 45 degrees (0.785398163 radians)
+          
+      }
+      if(s[i]=='+')
+      {
+        //Turn Left 45 degrees (0.785398163 radians)
           theta += branchangle;
+      }
+      if(s[i]=='-')
+      {
+        //Turn Left 45 degrees (0.785398163 radians)
+          theta += -branchangle;
       }
 
 
@@ -254,7 +267,7 @@ void DrawNodes2D(const char* fname, const char* vars)
     }
     
     
-    tr->Draw("A*");
+    tr->Draw("AC*");
     
 
 }
