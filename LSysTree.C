@@ -21,9 +21,9 @@ Float_t d1	= 94.74; 	// Divergence Angle 1
 Float_t d2	= 132.63; 	// Divergence angle 2
 Float_t a	= 18.95;	// Branching Angle
 Float_t lr 	=1.109;		// Elongation Rate
-Float_t vr	=1.172;		// Width Increase Rate
+Float_t vr	=1.732;		// Width Increase Rate
 
-TString s = "F(200)";
+TString s = "!(1)F(200)/(45)A";
 
 
 void Introduce()
@@ -95,9 +95,82 @@ void DerivationString(Int_t run_number)
      i++;
      
     }
-    if(s[i] == 'X')
+    if(s[i] == '!')
     {
-     sd += "F[X]FX";
+     sd += "!";
+     
+     //Temp Location to store string with float value
+     TString svalue = "";
+     Float_t fvalue;
+     
+     //open value
+     i++;
+     sd += "(";
+     
+     //Read Value
+     //Number to Double_t
+     i++;
+     while( s[i] != ')')
+     {
+       svalue += s[i];
+       i++;
+     }
+     fvalue = svalue.Atof();
+     //Apply Changes to value
+     fvalue = (fvalue*vr);
+     
+     
+     //Write to String
+     svalue = Form( "%g", fvalue);
+     sd += svalue;
+     
+     //Close the parenthesis
+     sd += ")";
+     i++;
+     
+    }
+    if(s[i] == 'A')
+    {
+      Float_t fvalue;
+      
+      sd += "!(";
+      
+      fvalue = vr;
+      svalue = Form( "%g", fvalue);
+      sd += svalue;
+      
+      sd += ")F(50)[&(";
+      
+      fvalue = a;
+      svalue = Form( "%g", fvalue);
+      sd += svalue;
+      
+      sd += ")F(50)A]/(";
+      
+      fvalue = d1;
+      svalue = Form( "%g", fvalue);
+      sd += svalue;
+      
+      sd += ")[&(";
+      
+      fvalue = a;
+      svalue = Form( "%g", fvalue);
+      sd += svalue;
+      
+      sd += ")F(50)A]/(";
+      
+      fvalue = d2;
+      svalue = Form( "%g", fvalue);
+      sd += svalue;
+      
+      sd += ")[&(";
+      
+      fvalue = a;
+      svalue = Form( "%g", fvalue);
+      sd += svalue;
+      
+      sd += ")F(50)A]";
+      
     }
     else
     {
