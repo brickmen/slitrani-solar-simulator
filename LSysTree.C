@@ -7,16 +7,23 @@
 #include "TString.h"
 #include "TRegexp.h"
 
+//Node Values
+Int_t Run, Event;	 // Indexes Node
+Int_t Leaf;		 // does branch terminate here? If so -> Leaf = 1 else Leaf = 0
+Float_t x,y,z;		 // Stores Position of Node
+TVector3 vH;		 // Heading Vector
+TVector3 vL;		 // Left Vector
+TVector3 vU( 0, 0, 1.0); // Up Vector (constant in world)
+Float_t width; 		 // Width of branch
 
-Int_t Run, Event, Leaf;
-Float_t x,y,z;
-Float_t theta, phi;
+//Global Values
+Float_t d1	= 94.74; 	// Divergence Angle 1
+Float_t d2	= 132.63; 	// Divergence angle 2
+Float_t a	= 18.95;	// Branching Angle
+Float_t lr 	=1.109;		// Elongation Rate
+Float_t vr	=1.172;		// Width Increase Rate
 
-Float_t step = 1.0; //Length of steps
-Float_t branchangle = 0.448549618; //divergent angle in rads
-Int_t symmetry = 3; //Number of sides that branching takes place
-
-TString s = "X";
+TString s = "F(200)";
 
 
 void Introduce()
@@ -30,7 +37,6 @@ void Introduce()
   cout << "OutputString() Prints current stage of string"<< endl;
 
 }
-
 void ChangeString( TString s2 )
 {
 
@@ -57,27 +63,45 @@ void DerivationString(Int_t run_number)
 
     if(s[i] == 'F')
     {
-     sd += "FF";
+     sd += "F";
+     
+     //Temp Location to store string with float value
+     TString svalue = "";
+     Float_t fvalue;
+     
+     //open value
+     i++;
+     sd += "(";
+     
+     //Read Value
+     //Number to Double_t
+     i++;
+     while( s[i] != ')')
+     {
+       svalue += s[i];
+       i++;
+     }
+     fvalue = svalue.Atof();
+     //Apply Changes to value
+     fvalue = (fvalue*lr);
+     
+     
+     //Write to String
+     svalue = Form( "%g", fvalue);
+     sd += svalue;
+     
+     //Close the parenthesis
+     sd += ")";
+     i++;
+     
     }
     if(s[i] == 'X')
     {
-     sd += "F[+X][-X]FX";
+     sd += "F[X]FX";
     }
-    if(s[i] == '[')
+    else
     {
-     sd += "[";
-    }
-    if(s[i] == ']')
-    {
-     sd += "]";
-    }
-    if(s[i] == '+')
-    {
-     sd += "+";
-    }
-    if(s[i] == '-')
-    {
-     sd += "-";
+     sd += s[i];
     }
 
   }
@@ -88,7 +112,7 @@ void DerivationString(Int_t run_number)
 void LSysTree()
 {
     Introduce();
-    Int_t n=7; //Number of derivations
+    Int_t n=3; //Number of derivations
     
     TString foutname = "run_000";
     TString fextension = ".root";
@@ -103,7 +127,7 @@ void LSysTree()
         TString fout = foutname + fextension;
         cout  << "  File output:" << fout << endl;
 
-        WriteTree( fout, i);
+       // WriteTree( fout, i);
 
         //Runs String DerivationString
         DerivationString(i);
@@ -115,68 +139,78 @@ void LSysTree()
 
 }
 
-void WriteTree(const char* filename, const Int_t run_number)
+void WriteTree(const char* filename, const Int_t run_number) //This Writes the Tree structure from the Command string
 {
 
-  //Loads the string and fills in the tree using built in rules
+  //Creates The file, overwites it is it already exists
     TFile *f = new TFile(filename,"recreate");
     TTree *T = new TTree("Tnodes","Tree Structure");
 
+   //Links parameters to the Tree structure
    T->Branch("Run",&Run,"Run/I");
    T->Branch("Event",&Event,"Event/I");
+   T->Branch("Leaf",&Leaf,"Leaf/I");
    T->Branch("x",&x,"x/F");
    T->Branch("y",&y,"y/F");
    T->Branch("z",&z,"z/F");
-   T->Branch("theta",&theta,"theta/F");
-   T->Branch("phi",&phi,"phi/F");
-   T->Branch("Leaf",&Leaf,"Leaf/I");
+   //Only headings are stored
+   T->Branch("vHx",&vH.X(),"vHx/F");
+   T->Branch("vHy",&vH.Y(),"vHy/F");
+   T->Branch("vHz",&vH.Z(),"vHz/F");
    
+   //Calculates length of string
     Int_t n=s.Length();   // Number of Characters to read
 
-    //Temporary variables for position push MAX needed in array is equal to run number
+    //Temporary variables for position push total needed in array is equal to run number
     Float_t px[run_number] = {};
     Float_t py[run_number]= {};
     Float_t pz[run_number]= {};
-    Float_t ptheta[run_number]= {};
-    Float_t pphi[run_number]= {};
-    Int_t push_position = -1;
+    Float_t pHx[run_number]= {};
+    Float_t pHy[run_number]= {};
+    Float_t pHz[run_number]= {};
+    Int_t push_position = -1; //Initialises storage as first command is to increase this by 1
 
-    //Initial Set of positions
+    //Initial Set of positions, ie. ground Zero
+    vH = vU; //Set heading to point up
     x = 0;
     y = 0;
     z = 0;
-    theta = 0;
-    phi = 0;
+    Run = run_number;
     Event = 0 ;
     Leaf = 0 ;
     T->Fill();
 
-    // Loop over n entries and fill the tree:
-    // This is the Axiom
+    // Loop over n entries in string and fill the tree:
     for (Int_t i=0; i < n; i++) {
-      Run = run_number;
-
+      //Set Left Value
+       vL = vH.Orthogonal();
+       cout<<"vH = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
+       cout<<"vL = x:" << vL.X() << "  y:" << vL.Y() << "  z:" << vL.Z() << endl;
+       cout<<"vU = x:" << vU.X() << "  y:" << vU.Y() << "  z:" << vU.Z() << endl;
+       
+      
       if(s[i]=='F')
       {
+	//Straight Line, and branch growth
          Event ++;
          Leaf = 0;
          
-         x = x + step*( sin(theta)*cos(phi) );
-         y = y + step*( sin(theta)*sin(phi) );
-         z = z + step*( cos(theta) );
+         x = x + step*( vH.X() );
+         y = y + step*( vH.Y() );
+         z = z + step*( vH.Z() );
 	 T->Fill();
       }
       if(s[i]=='X')
       {
+	//Straight Line, and branch growth, ending in Leaf
          Event ++;
          Leaf = 1;
-         
-         x = x + step*( sin(theta)*cos(phi));
-         y = y + step*( sin(theta)*sin(phi));
-         z = z + step*( cos(theta) );
+	 
+	 x = x + step*( vH.X() );
+         y = y + step*( vH.Y() );
+         z = z + step*( vH.Z() );
 	 T->Fill();
       }
-
       if(s[i]=='[')
       {
 
@@ -184,11 +218,12 @@ void WriteTree(const char* filename, const Int_t run_number)
           push_position ++;
 	 
           px[push_position] = x;
-	
           py[push_position] = y;
           pz[push_position] = z;
-          ptheta[push_position] = theta;
-          pphi[push_position] = phi;
+          
+          pHx[push_position] = vH.X();
+          pHy[push_position] = vH.Y();
+	  pHz[push_position] = vH.Z();
 
       }
       if(s[i]==']')
@@ -196,26 +231,40 @@ void WriteTree(const char* filename, const Int_t run_number)
           //Pop Position
 
           x = px[push_position];
-	 
           y = py[push_position];
           z = pz[push_position];
-          theta = ptheta[push_position];
-          phi = pphi[push_position];
+          
+	  v1.SetXYZ(pHx[push_position],pHy[push_position],pHz[push_position]);
+	  
           push_position --;
 
 
-          
-      }
+      }   
       if(s[i]=='+')
       {
-        //Turn Left 45 degrees (0.785398163 radians)
-          theta += branchangle;
+          //Rotate about U by a2 angle
+	
+	vH.Rotate((TMath::Pi)*(a2/180), vU);
+
+
       }
       if(s[i]=='-')
       {
-        //Turn Left 45 degrees (0.785398163 radians)
-          theta += -branchangle;
+          //Rotate about U by negative a2 angle
+	
+	vH.Rotate((TMath::Pi)*(-a2/180), vU);
+
+
       }
+      if(s[i]=='&')
+      {
+          //Rotate about L by divergence angle
+	
+	vH.Rotate((TMath::Pi)*(d/180), vU);
+
+
+      }
+     
 
 
     }
