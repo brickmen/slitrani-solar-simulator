@@ -11,10 +11,11 @@
 Int_t Run, Event;	 // Indexes Node
 Int_t Leaf;		 // does branch terminate here? If so -> Leaf = 1 else Leaf = 0
 Float_t x,y,z;		 // Stores Position of Node
+Float_t Width; 		 // Width of branch
 TVector3 vH;		 // Heading Vector
 TVector3 vL;		 // Left Vector
 TVector3 vU( 0, 0, 1.0); // Up Vector (constant in world)
-Float_t width; 		 // Width of branch
+
 
 //Global Values
 Float_t d1	= 94.74; 	// Divergence Angle 1
@@ -55,7 +56,10 @@ void DerivationString(Int_t run_number)
 {
 
   TString sd = "";
+  TString svalue = "";
+  Float_t fvalue;
 
+  
   Int_t i;
 
   for(i = 0; i <= s.Length(); i++)
@@ -66,8 +70,8 @@ void DerivationString(Int_t run_number)
      sd += "F";
      
      //Temp Location to store string with float value
-     TString svalue = "";
-     Float_t fvalue;
+     svalue = "";
+     
      
      //open value
      i++;
@@ -100,8 +104,7 @@ void DerivationString(Int_t run_number)
      sd += "!";
      
      //Temp Location to store string with float value
-     TString svalue = "";
-     Float_t fvalue;
+     svalue = "";
      
      //open value
      i++;
@@ -131,7 +134,6 @@ void DerivationString(Int_t run_number)
     }
     if(s[i] == 'A')
     {
-      Float_t fvalue;
       
       sd += "!(";
       
@@ -200,7 +202,7 @@ void LSysTree()
         TString fout = foutname + fextension;
         cout  << "  File output:" << fout << endl;
 
-       // WriteTree( fout, i);
+        WriteTree( fout, i);
 
         //Runs String DerivationString
         DerivationString(i);
@@ -218,6 +220,9 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
   //Creates The file, overwites it is it already exists
     TFile *f = new TFile(filename,"recreate");
     TTree *T = new TTree("Tnodes","Tree Structure");
+    
+    //Heading Vector floats for storing to tree
+    Float_t vHx,vHy,vHz;
 
    //Links parameters to the Tree structure
    T->Branch("Run",&Run,"Run/I");
@@ -226,14 +231,18 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
    T->Branch("x",&x,"x/F");
    T->Branch("y",&y,"y/F");
    T->Branch("z",&z,"z/F");
+   T->Branch("Width",&Width,"Width/F");
    //Only headings are stored
-   T->Branch("vHx",&vH.X(),"vHx/F");
-   T->Branch("vHy",&vH.Y(),"vHy/F");
-   T->Branch("vHz",&vH.Z(),"vHz/F");
+   T->Branch("vHx",&vHx,"vHx/F");
+   T->Branch("vHy",&vHy,"vHy/F");
+   T->Branch("vHz",&vHz,"vHz/F");
+   
    
    //Calculates length of string
-    Int_t n=s.Length();   // Number of Characters to read
+    Int_t nchar = s.Length();   // Number of Characters to read
 
+    cout << "	Number of string characters to read, n:" << nchar <<endl;
+    
     //Temporary variables for position push total needed in array is equal to run number
     Float_t px[run_number] = {};
     Float_t py[run_number]= {};
@@ -243,33 +252,79 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
     Float_t pHz[run_number]= {};
     Int_t push_position = -1; //Initialises storage as first command is to increase this by 1
 
+    cout << "	Push Mem Allocated"  <<endl;
     //Initial Set of positions, ie. ground Zero
     vH = vU; //Set heading to point up
+    cout << "	Init vH"  <<endl;
+    cout<<"vH = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
+    vHx = vH.X();
+    vHy = vH.Y();
+    vHz = vH.Z();
     x = 0;
     y = 0;
     z = 0;
     Run = run_number;
     Event = 0 ;
     Leaf = 0 ;
+    Width = 1.0 ;
+    cout << "	Ready to Fill Tree"  <<endl;
+    
+    
     T->Fill();
+    
 
+    vL = vH.Orthogonal();
+    cout << "	Init vL"  <<endl;
+    
+    cout << "	Init State Set"  <<endl;
+    
     // Loop over n entries in string and fill the tree:
-    for (Int_t i=0; i < n; i++) {
+    for (Int_t i=0; i < nchar; i++) {
       //Set Left Value
-       vL = vH.Orthogonal();
-       cout<<"vH = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
-       cout<<"vL = x:" << vL.X() << "  y:" << vL.Y() << "  z:" << vL.Z() << endl;
-       cout<<"vU = x:" << vU.X() << "  y:" << vU.Y() << "  z:" << vU.Z() << endl;
+       cout << "	string character i:" << i << "  s[i]:" << s[i] << endl;
        
+       TString svalue = "";
+       Float_t fvalue;
       
-      if(s[i]=='F')
+      if(s[i]=='!') //Set Branch Width
       {
-	//Straight Line, and branch growth
+	
         
     
 	//Temp Location to store string with float value
-	TString svalue = "";
-	Float_t fvalue;
+	svalue = "";
+
+	//open value
+	i++;
+
+        //Read Value in Brackets
+        //Number to Float_t
+        i++;
+
+        while( s[i] != ')')
+        {
+          svalue += s[i];
+
+          i++;
+        }
+        fvalue = svalue.Atof();
+
+     
+ 
+	cout << "	string value, fvalue:" << fvalue << endl;
+        
+        //Set Value
+        Width = fvalue;
+
+	
+      } 
+      if(s[i]=='F') //Straight Line, and branch growth
+      {
+	
+        
+    
+	//Temp Location to store string with float value
+	svalue = "";
 	
 	//open value
 	i++;
@@ -284,29 +339,36 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
         }
         fvalue = svalue.Atof();
      
-        //Close the parenthesis
-        i++; 
+      
+	cout << "	string value, fvalue:" << fvalue << endl;
  	
 	Event ++;
         Leaf = 0;
          
-        x = x + step*( vH.X() );
-        y = y + step*( vH.Y() );
-        z = z + step*( vH.Z() );
+        x = x + fvalue*( vH.X() );
+        y = y + fvalue*( vH.Y() );
+        z = z + fvalue*( vH.Z() );
+	vHx = vH.X();
+	vHy = vH.Y();
+	vHz = vH.Z();
         T->Fill();
       }
-      if(s[i]=='X')
+      if(s[i]=='A') //Apex, this is leaf position
       {
-	//Straight Line, and branch growth, ending in Leaf
+	
+	
          Event ++;
          Leaf = 1;
 	 
-	 x = x + step*( vH.X() );
-         y = y + step*( vH.Y() );
-         z = z + step*( vH.Z() );
+	 x = x;
+         y = y;
+         z = z; 
+	 vHx = vH.X();
+	 vHy = vH.Y();
+	 vHz = vH.Z();
 	 T->Fill();
       }
-      if(s[i]=='[')
+      if(s[i]=='[') //Push Position
       {
 
           //Push Position
@@ -321,7 +383,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 	  pHz[push_position] = vH.Z();
 
       }
-      if(s[i]==']')
+      if(s[i]==']') //Pop Position
       {
           //Pop Position
 
@@ -329,36 +391,64 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
           y = py[push_position];
           z = pz[push_position];
           
-	  v1.SetXYZ(pHx[push_position],pHy[push_position],pHz[push_position]);
+	  vH.SetXYZ(pHx[push_position],pHy[push_position],pHz[push_position]);
+	  vL = vH.Orthogonal();
+       
 	  
           push_position --;
 
 
       }   
-      if(s[i]=='+')
+      if(s[i]=='/') //Rotate about H, turn L by angle
       {
-          //Rotate about U by a2 angle
-	
-	vH.Rotate((TMath::Pi)*(a2/180), vU);
 
+	//Temp Location to store string with float value
+	svalue = "";
+	
+	//open value
+	i++;
+	
+        //Read Value in Brackets
+        //Number to Float_t
+        i++;
+        while( s[i] != ')')
+        {
+          svalue += s[i];
+          i++;
+        }
+        fvalue = svalue.Atof();
+
+	cout << "	string value, fvalue:" << fvalue << endl;
+	
+	vL.Rotate(fvalue*TMath::DegToRad(), vH);
 
       }
-      if(s[i]=='-')
+      if(s[i]=='&') //Rotate about L, turn H by angle
       {
-          //Rotate about U by negative a2 angle
-	
-	vH.Rotate((TMath::Pi)*(-a2/180), vU);
 
+	//Temp Location to store string with float value
+	svalue = "";
+	
+	//open value
+	i++;
+	
+        //Read Value in Brackets
+        //Number to Float_t
+        i++;
+        while( s[i] != ')')
+        {
+          svalue += s[i];
+          i++;
+        }
+        fvalue = svalue.Atof();
+     
+	cout << "	string value, fvalue:" << fvalue << endl;
+	
+	vH.Rotate(fvalue*TMath::DegToRad(), vL);
 
       }
-      if(s[i]=='&')
-      {
-          //Rotate about L by divergence angle
-	
-	vH.Rotate((TMath::Pi)*(d/180), vU);
-
-
-      }
+      
+     
      
 
 
@@ -369,6 +459,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 
     T->Write("", TObject::kOverwrite);
     delete f;
+    cout<<"Completed Run: Tree Saved" <<endl;
 
 
 }
