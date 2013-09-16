@@ -265,13 +265,35 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
       if(s[i]=='F')
       {
 	//Straight Line, and branch growth
-         Event ++;
-         Leaf = 0;
+        
+    
+	//Temp Location to store string with float value
+	TString svalue = "";
+	Float_t fvalue;
+	
+	//open value
+	i++;
+	
+        //Read Value in Brackets
+        //Number to Float_t
+        i++;
+        while( s[i] != ')')
+        {
+          svalue += s[i];
+          i++;
+        }
+        fvalue = svalue.Atof();
+     
+        //Close the parenthesis
+        i++; 
+ 	
+	Event ++;
+        Leaf = 0;
          
-         x = x + step*( vH.X() );
-         y = y + step*( vH.Y() );
-         z = z + step*( vH.Z() );
-	 T->Fill();
+        x = x + step*( vH.X() );
+        y = y + step*( vH.Y() );
+        z = z + step*( vH.Z() );
+        T->Fill();
       }
       if(s[i]=='X')
       {
