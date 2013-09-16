@@ -12,6 +12,7 @@ Int_t Run, Event;	 // Indexes Node
 Int_t Leaf;		 // does branch terminate here? If so -> Leaf = 1 else Leaf = 0
 Float_t x,y,z;		 // Stores Position of Node
 Float_t Width; 		 // Width of branch
+Float_t Length;		 // Length of branch
 TVector3 vH;		 // Heading Vector
 TVector3 vL;		 // Left Vector
 TVector3 vU( 0, 0, 1.0); // Up Vector (constant in world)
@@ -232,6 +233,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
    T->Branch("y",&y,"y/F");
    T->Branch("z",&z,"z/F");
    T->Branch("Width",&Width,"Width/F");
+   T->Branch("Length",&Length,"Length/F");
    //Only headings are stored
    T->Branch("vHx",&vHx,"vHx/F");
    T->Branch("vHy",&vHy,"vHy/F");
@@ -253,7 +255,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
     Int_t push_position = -1; //Initialises storage as first command is to increase this by 1
 
     cout << "	Push Mem Allocated"  <<endl;
-    //Initial Set of positions, ie. ground Zero
+    //Initial Set of positions, ie. ground Zero, zero Length Branch
     vH = vU; //Set heading to point up
     cout << "	Init vH"  <<endl;
     cout<<"vH = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
@@ -267,6 +269,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
     Event = 0 ;
     Leaf = 0 ;
     Width = 1.0 ;
+    Length = 0.0 ;
     cout << "	Ready to Fill Tree"  <<endl;
     
     
@@ -280,9 +283,10 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
     
     // Loop over n entries in string and fill the tree:
     for (Int_t i=0; i < nchar; i++) {
-      //Set Left Value
-       cout << "	string character i:" << i << "  s[i]:" << s[i] << endl;
+
+       //cout << "	string character i:" << i << "  s[i]:" << s[i] << endl;
        
+      //Reset These
        TString svalue = "";
        Float_t fvalue;
       
@@ -311,7 +315,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 
      
  
-	cout << "	string value, fvalue:" << fvalue << endl;
+	//cout << "	string value, fvalue:" << fvalue << endl;
         
         //Set Value
         Width = fvalue;
@@ -340,26 +344,30 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
         fvalue = svalue.Atof();
      
       
-	cout << "	string value, fvalue:" << fvalue << endl;
+	//cout << "	string value, fvalue:" << fvalue << endl;
  	
+	//Sets Values for Tree Storage
 	Event ++;
-        Leaf = 0;
-         
-        x = x + fvalue*( vH.X() );
-        y = y + fvalue*( vH.Y() );
-        z = z + fvalue*( vH.Z() );
+        Leaf = 0; 
+        Length = fvalue;
 	vHx = vH.X();
 	vHy = vH.Y();
 	vHz = vH.Z();
         T->Fill();
+	
+	//Moves Position for Next Branch
+	x = x + fvalue*( vH.X() );
+        y = y + fvalue*( vH.Y() );
+        z = z + fvalue*( vH.Z() );
       }
       if(s[i]=='A') //Apex, this is leaf position
       {
 	
-	
+	//Sets value for Apex
          Event ++;
          Leaf = 1;
-	 
+	 Length = 0;
+	 Width = 0;
 	 x = x;
          y = y;
          z = z; 
@@ -418,7 +426,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
         }
         fvalue = svalue.Atof();
 
-	cout << "	string value, fvalue:" << fvalue << endl;
+	//cout << "	string value, fvalue:" << fvalue << endl;
 	
 	vL.Rotate(fvalue*TMath::DegToRad(), vH);
 
@@ -442,7 +450,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
         }
         fvalue = svalue.Atof();
      
-	cout << "	string value, fvalue:" << fvalue << endl;
+	//cout << "	string value, fvalue:" << fvalue << endl;
 	
 	vH.Rotate(fvalue*TMath::DegToRad(), vL);
 
@@ -512,5 +520,13 @@ void DrawNodes2D(const char* fname, const char* vars)
 void WorldDraw()
 {
   TGeoManager *geom = new TGeoManager("setup","L-System Tree");
+  
+  TFile *f = new TFile(fname);
+  TTree *T = (TTree*)f->Get("Tnodes");
+
+   
+    
+    
+    tr->Draw("AC*");
 }
 
