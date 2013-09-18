@@ -8,7 +8,7 @@
 #include "TString.h"
 #include "TRegexp.h"
 
-//Tree Node Values
+//L-System Tree Node Values
 Int_t Run, Event;	 // Indexes Node
 Int_t Leaf;		 // does branch terminate here? If so -> Leaf = 1 else Leaf = 0
 Float_t x,y,z;		 // Stores Position of Node
@@ -19,14 +19,14 @@ TVector3 vL;		 // Left Vector
 TVector3 vU( 0, 0, 1.0); // Up Vector (constant in world)
 
 
-//Tree Global Values
+//L-System Tree Global Values
 Float_t d1	= 94.74; 	// Divergence Angle 1
 Float_t d2	= 132.63; 	// Divergence angle 2
 Float_t a	= 18.95;	// Branching Angle
 Float_t lr 	=1.109;		// Elongation Rate
 Float_t vr	=1.732;		// Width Increase Rate
 
-//Tree Axiom
+//L-System Tree Axiom
 TString s = "!(1)F(200)/(45)A";
 
 //Slitrani Setup
@@ -40,27 +40,198 @@ TFile *f = new TFile("solarfiles.root","RECREATE");
 TH1F *h1 = new TH1F("h1","basis",2002,280.0,4000.0);
 TTree *t = new TTree("ntuple","data from csv file");
 
-//____________________________________________________________________________
-//____________________________________________________________________________
-//
-// Building the geometry
-//____________________________________________________________________________
-//____________________________________________________________________________
-//
+//Prepare the Geometry
 TGeoManager *geom = new TGeoManager("setup","Solar Panel of new Litrani");
 
-
-void Introduce() //Spash Screen Introduction
+//User Interface and Main Program
+void slitsolar() //Main Steering Function
 {
-  cout << "Welcome to LSysTree an L-System Generator for a Vector Node Tree"<< endl;
+  //Prepare SLitrani
+  gROOT->ProcessLine(".x InitSLitrani.C(5,name,listing,upcom,downcom,kFALSE,kTRUE,kFALSE)");
   
-  cout << "Currently axiom set to: "<< s << endl;
+  Splash();
+  
+  Int_t exit;
+  Int_t menu;
+  Int_t back;
+  
+  while(exit != 1)
+  {
+    
+    MainMenu();
+    cin >> menu;
+    
+    if( menu == 0)
+    {
+      exit=1;
+    }
+    if( menu == 1) //Run All as Default
+    {
+      SolarInput(1);
+      LSysTree(5);
+      GeometryConstruction();
 
-  cout << "ChangeString() allows you to change the initial character set"<< endl;
+      
+      
+    }
+    if( menu == 2) // L-System Management
+    {
+      back = 0;
+      while(back != 1)
+      {
+	LSysMenu();
+	cin >> menu;
+	
+	if( menu == 0)
+	{
+	  back = 1;
+	}
+	if( menu == 1)
+	{
+	  back = 1;
+	}
+      }
+    }
+    if( menu == 3) // SMARTS Menu
+    {
+      back = 0;
+      while(back != 1)
+      {
+	SMARTSMenu();
+	cin >> menu;
+	
+	if( menu == 0)
+	{
+	  back = 1;
+	}
+	if( menu == 1) //Default
+	{
+	  SolarInput(1);
+	}
+	if( menu == 2) //Default With Print
+	{
+	  SolarInput(2);
+	}
+	if( menu == 3) //Manual Entry
+	{
+	  SolarInput(3);
+	}
+      }
+     }
+    if( menu == 5) //Draw Only
+    {
+      SolarInput(1);
+      LSysTree(5);
+      GeometryConstruction();
+     
+    }
+  
+  }
+}
+void Splash() //Spash Screen Introduction, Lists commands
+{
+ 
+  cout << "***********************************************************************************"<< endl;
+  
+  cout << "Welcome to SLitSolar, a Solar simulator for SLitrani with L-System Tree Generation"<< endl;
+  
+  cout << "	Developed By Michael Abbott (m.d.abbott@warwick.ac.uk)"<< endl;
+  
+  cout << "			Version 0.9.1 (18 Sep 2013)"<< endl;
 
-  cout << "OutputString() Prints current stage of string"<< endl;
+  cout << "***********************************************************************************"<< endl;
+
+  cout << "Please Enter Numerical Value to Navigate Menu eg: '0' to quit"<< endl;
 
 }
+void MainMenu() //Main Menu , Lists commands
+{
+  cout << "-------------------------------------------------"<< endl;
+  cout << "Main Menu:    	(* = Not Yet Functional)"<< endl;
+  cout << "	0 - Quit"<< endl;
+  cout << "	1 - Run All As Default"<< endl;
+  cout << "	2 - L-System Management"<< endl;
+  cout << "	3 - SMARTS Solar Input"<< endl;
+  cout << "	* - SLitrani Management"<< endl;
+  cout << "	5 - Draw World **Debug**"<< endl;
+
+}
+void LSysMenu() //L-System Menu, Lists commands
+{
+  cout << "-------------------------------------------------"<< endl;
+  cout << "L-System Menu:    	(* = Not Yet Functional)"<< endl;
+  cout << "	0 - Back"<< endl;
+  cout << "	* - Run L-System As Default"<< endl;
+  cout << "	* - Edit Axiom"<< endl;
+  cout << "	* - Change Global Variables"<< endl;
+  cout << "	* - Draw Tree"<< endl;
+
+}
+void SMARTSMenu() //SMARTS Menu, Lists commands
+{
+  cout << "-------------------------------------------------"<< endl;
+  cout << "SMARTS Menu:    	(* = Not Yet Functional)"<< endl;
+  cout << "	0 - Back"			<< endl;
+  cout << "	1 - Use Default (ASTMG173.csv)"	<< endl;
+  cout << "	2 - Use Default & Print to Screen"	<< endl;
+  cout << "	3 - Manually Specify Smarts File"	<< endl;
+  cout << "	* - Draw Spectra"			<< endl;
+
+}
+void LSysTree(Int_t n) //Manages L-System Commands, "n" is number of derivations
+{
+    TString foutname = "run_000";
+    TString fextension = ".root";
+    for (Int_t i=0; i < n; i++) {
+
+        cout << "Run Number: "<< i << endl;
+        OutputString();
+      // Num is assigned for filename and then added into the string, works for up to 99 installments
+        const char* num;
+        num = Form( "%d", i);
+        foutname.Replace(4,3,num);
+        TString fout = foutname + fextension;
+        cout  << "  File output:" << fout << endl;
+
+        WriteTree( fout, i);
+
+        //Runs String DerivationString
+        DerivationString(i);
+
+	
+
+
+    }
+
+}
+void LoadSim() //Manages Simulation
+{
+
+  int acceptedinput = 0;
+  while(acceptedinput != 1)
+  {
+    Double_t yes_no;
+    cout << "Do You Want to Run the simulation (or just draw)? (Run=(1)/Draw=(0)):"<< endl << flush;
+    cin >> yes_no;
+    if( yes_no == 1)
+      {
+        cout << "Running Simulation"<< endl;
+        RunSystem(kFALSE,kTRUE);
+        acceptedinput=1;
+      }
+    if( yes_no == 0)
+      {
+         cout << "Drawing Only"<< endl;
+         RunSystem(kTRUE,kTRUE);
+         acceptedinput=1;
+      }
+
+   }
+
+
+}
+
+//L-System - String Functions
 void ChangeString( TString s2 ) //Applies New string
 {
 
@@ -69,7 +240,6 @@ void ChangeString( TString s2 ) //Applies New string
 
 
 }
-
 void DerivationString(Int_t run_number)
 {
 
@@ -202,36 +372,14 @@ void DerivationString(Int_t run_number)
 
 
 }
-void LSysTree()
+void OutputString() //Prints current String
 {
-    Introduce();
-    Int_t n=3; //Number of derivations
-    
-    TString foutname = "run_000";
-    TString fextension = ".root";
-    for (Int_t i=0; i < n; i++) {
 
-        cout << "Run Number: "<< i << endl;
-        OutputString();
-      // Num is assigned for filename and then added into the string, works for up to 99 installments
-        const char* num;
-        num = Form( "%d", i);
-        foutname.Replace(4,3,num);
-        TString fout = foutname + fextension;
-        cout  << "  File output:" << fout << endl;
-
-        WriteTree( fout, i);
-
-        //Runs String DerivationString
-        DerivationString(i);
-
-	
-
-
-    }
+    cout << "      String set to: "<< s << endl;
 
 }
 
+//L-System - Tree Functions
 void WriteTree(const char* filename, const Int_t run_number) //This Writes the Tree structure from the Command string
 {
 
@@ -488,32 +636,24 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 
 
 }
-
-// Tree Printing and Browsing Commands
-void PrintNodeEntry(const char* fname, Int_t line_identifier)
+void PrintNodeEntry(const char* fname, Int_t line_identifier) //Prints Details for specific Node entry
 {
     TFile *f = new TFile(fname);
     TTree *T = (TTree*)f->Get("Tnodes");
     T->GetEntry(line_identifier);
     T->Show(line_identifier);
 }
-void PrintTree(const char* fname)
+void PrintTreeDetails(const char* fname) //Overall Details of Node Tree
 {
     TFile *f = new TFile(fname);
     TTree *T = (TTree*)f->Get("Tnodes");
     T->Print();
 }
-void Browser()
+void Browser() //Loads Browser
 {
     new TBrowser();
 }
-void OutputString() //Prints current String
-{
-
-    cout << "      String set to: "<< s << endl;
-
-}
-void DrawNodes2D(const char* fname, const char* vars)
+void DrawNodes2D(const char* fname, const char* vars) //Draws Nodes in 2 Dimensions
 {
     TFile *f = new TFile(fname);
     TTree *T = (TTree*)f->Get("Tnodes");
@@ -534,53 +674,51 @@ void DrawNodes2D(const char* fname, const char* vars)
     
 
 }
-void LoadSim()
+
+//SLitrani - Simulation Commands
+void RunSystem(Bool_t  drawonly,Bool_t  motion) //Runs Siulation with Slitrani
 {
-  //____________________________________________________________________________
-  //____________________________________________________________________________
-  //
-  // LoadSim A solar simulation Package for SLitrani in ROOT
-  //
-  // By Michael Abbott (m.d.abbott@warwick.ac.uk) - Universitry of Warwick
-  //____________________________________________________________________________
-  //____________________________________________________________________________
-  //
-  // This is the control Module for Simulation Package
-
-  gROOT->ProcessLine(".x InitSLitrani.C(5,name,listing,upcom,downcom,kFALSE,kTRUE,kFALSE)");
-
-  cout << "Welcome to MDASim a solar simulation package for SLitrani on Root"<< endl;
-
-  //
-  SolarInput();
-  //
-  int acceptedinput = 0;
-  while(acceptedinput != 1)
-  {
-    Double_t yes_no;
-    cout << "Do You Want to Run the simulation (or just draw)? (yes=(1)/no=(0)):"<< endl << flush;
-    cin >> yes_no;
-    if( yes_no == 1)
-      {
-        cout << "Running Simulation"<< endl;
-        RunSustem(kFALSE,kTRUE);
-        acceptedinput=1;
-      }
-    if( yes_no == 0)
-      {
-         cout << "Drawing Only"<< endl;
-         RunSustem(kTRUE,kTRUE);
-         acceptedinput=1;
-      }
-
-   }
-
-
-}
-
-void RunSustem(Bool_t  drawonly,Bool_t  motion)
-{
+  geom->CloseGeometry();
+  geom->CheckOverlaps(0.01);
+  
+  
+    //Load generated spectra
+    plastic->FindSpectrum("Spectrum_AM1_5G");
+    // Shifts sun just below horizon
+    phsun-> RotateY(7.5);
     //
+    Int_t krun;
+    const Int_t nrun = 27;
+    const Int_t nbphot = 4000;
+    Double_t angstep   = 7.5;
+    TLit::Get()->BookCanvas();
+    gTwoPad->SetAllGrey();
+    gTwoPad->CommentTL(comTL);
+    //  gStyle->SetCanvasPreferGL(kTRUE);
+    // top->Draw("ogl");
+    top->Draw("");
+    TLitSpontan *solar_source;
+    solar_source = new TLitSpontan("Sun","Sun","/TOP_1/TOT_1/FIB_1", kTRUE,kTRUE);
+    solar_source->TrackToDraw(4);
+    solar_source->MoveCradle(phsun,kTRUE);
+    for (krun=1;krun<=nrun;krun++) {
+      solar_source->Gen(krun,nbphot);
+      //rotation
+      if (krun != nrun && motion) {
+        phsun-> RotateY(-(angstep));
+        solar_source->MoveCradle(phsun,kTRUE);
+        }
+    }
+    gLitGp->SetTitle("wavelength of solar_source");
+    gLitGp->Summary();
+    gTwoPad->ChangePad();
+    gLitGs->DoStat();
+    TLit::Get()->CloseFiles();
+  
+}
+void GeometryConstruction()
+{
+  
   const char *comTL = "simple solar panel";
   const Color_t  TotAbsColor    =  1;
   const Color_t  PanelColor     =  2;
@@ -669,7 +807,7 @@ void RunSustem(Bool_t  drawonly,Bool_t  motion)
   Double_t delta         = (0.009308);
   Double_t fib_r         = 10*(delta * 0.5 * dist) ;
   const Double_t fib_dz  = 0.1;
-  //____________________________________________________________________________
+  //___________________________________________________________________________
   //
   // Positionning (translations)
   //____________________________________________________________________________
@@ -712,7 +850,38 @@ void RunSustem(Bool_t  drawonly,Bool_t  motion)
   TVector3 facedir(0.0,0.0,1.0); // axis to follow to reach face of emission
   TVector3 source(0.0,0.0,0.0);  // irrelevant
   lit_fib->SetEmission(flat,180.0,emisdir,"",kFALSE,source,kTRUE,facedir);
-  //____________________________________________________________________________
+
+
+
+/*
+
+  TGeoTranslation *tree_base = new TGeoTranslation("tree_base",0.0,0.0,0.0);
+  TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
+  tot->AddNode(panel,1,panel_pstn);
+  TLitVolume *lit_panel = new TLitVolume(panel);
+  lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
+  // Branches
+
+
+  // Adding Leaves
+  TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
+
+
+
+  //Adding to the world
+  tot->AddNode(tree,1,tree_pstn);
+
+  // Setting Leaves as Detectors
+
+  for() //here needs to go a for statement covering each leaf
+  {
+      TLitVolume *lit_panel = new TLitVolume(panel);
+      lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
+  }
+*/
+
+  /*
+    //____________________________________________________________________________
   //
   // Constructing the Tree
   //____________________________________________________________________________
@@ -747,15 +916,8 @@ void RunSustem(Bool_t  drawonly,Bool_t  motion)
       lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
   }
 */
-  //____________________________________________________________________________
-  //____________________________________________________________________________
-  //
-  // End of Building the geometry
-  //____________________________________________________________________________
-  //____________________________________________________________________________
-  //
-  geom->CloseGeometry();
-  geom->CheckOverlaps(0.01);
+
+  
   //____________________________________________________________________________
   //
   // Colors and drawing
@@ -766,9 +928,9 @@ void RunSustem(Bool_t  drawonly,Bool_t  motion)
   top->SetLineColor(1);
   top->SetLineWidth(1);
   tot->SetVisibility(kTRUE);
-  panel->SetVisibility(kTRUE);
-  panel->SetLineColor(PanelColor);
-  panel->SetLineWidth(1);
+  //panel->SetVisibility(kTRUE);
+  //panel->SetLineColor(PanelColor);
+  //panel->SetLineWidth(1);
   fib->SetVisibility(kTRUE);
   fib->SetLineColor(FibreColor);
   fib->SetLineWidth(1);
@@ -782,141 +944,68 @@ void RunSustem(Bool_t  drawonly,Bool_t  motion)
   //____________________________________________________________________________
   //____________________________________________________________________________
   //
-  if(drawonly == kTRUE)
-  {
-    //  gStyle->SetCanvasPreferGL(kTRUE);
-    // top->Draw("ogl");
 
+  tot->SetVisibility(kFALSE);
+  phsun-> RotateY(-45.0);
 
-      tot->SetVisibility(kFALSE);
-      phsun-> RotateY(-45.0);
+  top->Draw("x3d");
+  
 
-    top->Draw("x3d");
-  }
-  else{
-    //Load generated spectra
-    plastic->FindSpectrum("Spectrum_AM1_5G");
-    // Shifts sun just below horizon
-    phsun-> RotateY(7.5);
-    //
-    Int_t krun;
-    const Int_t nrun = 27;
-    const Int_t nbphot = 4000;
-    Double_t angstep   = 7.5;
-    TLit::Get()->BookCanvas();
-    gTwoPad->SetAllGrey();
-    gTwoPad->CommentTL(comTL);
-    //  gStyle->SetCanvasPreferGL(kTRUE);
-    // top->Draw("ogl");
-    top->Draw("");
-    TLitSpontan *solar_source;
-    solar_source = new TLitSpontan("Sun","Sun","/TOP_1/TOT_1/FIB_1", kTRUE,kTRUE);
-    solar_source->TrackToDraw(4);
-    solar_source->MoveCradle(phsun,kTRUE);
-    for (krun=1;krun<=nrun;krun++) {
-      solar_source->Gen(krun,nbphot);
-      //rotation
-      if (krun != nrun && motion) {
-        phsun-> RotateY(-(angstep));
-        solar_source->MoveCradle(phsun,kTRUE);
-        }
-    }
-    gLitGp->SetTitle("wavelength of solar_source");
-    gLitGp->Summary();
-    gTwoPad->ChangePad();
-    gLitGs->DoStat();
-    TLit::Get()->CloseFiles();
-  }
+ 
 }
-
-
-
-int SolarInput()
+int SolarInput(Int_t solaroptions) // Uses a SMARTS output to make a spectra for SLitrani Solar source
 {
 
-  //____________________________________________________________________________
-  //____________________________________________________________________________
-  //
-  // Preparing Solar Spectrum
-  //____________________________________________________________________________
-  //____________________________________________________________________________
-  //
-  //  Read data from SMARTS output and load into a ROOT histogram for processing
-  //
-  // Modified from Rene Brun's basic2.C tutorial
-  //
-  // Return options: 1-successful load, 2-file not found, 3-error loading file
-  //
-
-  // Loading Sun Spectra
-  int acceptedinput = 0;
-  while(acceptedinput != 1)
-    {
-      cout << "Loading Sun Spectra from SMARTS output;"<< endl;
-      cout << "Enter Number: 1-Use default Settings, 2-Use Default settings with screen print, 3-Manually enter details, 0-exit"<< endl;
-      Double_t solaroptions = 0;
-      cin >> solaroptions;
-      cout << "inputted: " << solaroptions << endl;
-      //Default Options
-      if( solaroptions == 0)
-        {
-          cout << "Exit Called"<< endl;
-          acceptedinput=1;
-          return 0;
-        }
+ 
+      
       if( solaroptions == 1)
         {
           cout << "Using Default Settings"<< endl;
-          char *finname = "ASTMG173.csv"; //Name of Smarts file in Use
+          TString finname = "ASTMG173.csv"; //Name of Smarts file in Use
           Bool_t  printentries = kFALSE;
-          acceptedinput=1;
         }
       if( solaroptions == 2)
         {
           cout << "Using Default Settings with Screen Print"<< endl;
-          char *finname = "ASTMG173.csv"; //Name of Smarts file in Use
+          TString finname = "ASTMG173.csv"; //Name of Smarts file in Use
           Bool_t  printentries = kTRUE;
-          acceptedinput=1;
         }
       if( solaroptions == 3)
         {
-          char *finname[200];
+          TString finname;
           cout << "Manually enter Details: File input name (eg:ASTMG173.csv):"<< endl << flush;
           cin >> finname;
-          getline(cin, finname);
+      
           Double_t yes_no;
           cout << "Do You Want a Screen Print? (yes=(1)/no=(0)):"<< endl << flush;
           cin >> yes_no;
           if( yes_no == 1)
             {
                 Bool_t  printentries = kTRUE;
-                acceptedinput=1;
             }
           if( yes_no == 0)
             {
                 Bool_t  printentries = kFALSE;
-                acceptedinput=1;
             }
-          else
-          {
-              cout << "Please enter just '1' or '0'"<< endl << flush;
-          }
-        }
+	}
+	
 
-    }
+
+
+    
    //
-   cout << "File Input Name     : " << finname << endl;
+   cout << "SMARTS File Input Name     : " << finname << endl;
    //
    //
    TString dir = gSystem->UnixPathName(gInterpreter->GetCurrentMacroName());
-   dir.ReplaceAll("MDASim.C","");
+   dir.ReplaceAll("slitsolar.C","");
    dir.ReplaceAll("/./","/");
    ifstream in;
    in.open(Form( finname ,dir.Data()));
    //
    //
    //Built In Routine to read file into a tree
-   t.ReadFile(finname,
+   t->ReadFile(finname,
              "Wavelength:Extra_Terrestial_Radiation:Global_Tilt:Direct_and_Circumsolar");
 
    //Prints File Contents to Screen
@@ -963,5 +1052,3 @@ int SolarInput()
    f->Write();
     return 1;
 }
-
-
