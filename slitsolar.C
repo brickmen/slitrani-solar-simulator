@@ -50,6 +50,14 @@ void slitsolar() //Main Steering Function
   
   Splash();
   
+  SolarInput(1);
+  
+  GeometryConstruction(1, 0);
+  
+  RunSystem(kTRUE);
+  
+  
+  /* Hidden Menu System
   Int_t exit;
   Int_t menu;
   Int_t back;
@@ -68,7 +76,7 @@ void slitsolar() //Main Steering Function
     {
       SolarInput(1);
       LSysTree(5);
-      GeometryWorldConstruction();
+      GeometryConstruction();
 
       
       
@@ -117,15 +125,49 @@ void slitsolar() //Main Steering Function
 	}
       }
      }
-    if( menu == 5) //Draw Only
+    if( menu == 4) // Simulation Menu
+    {
+      back = 0;
+      while(back != 1)
+      {
+	SimMenu();
+	cin >> menu;
+	
+	if( menu == 0)
+	{
+	  back = 1;
+	}
+	if( menu == 1) //Full
+	{
+	  GeometryConstruction(1, 1);
+	  RunSystem(kTRUE);
+	  
+	}
+	if( menu == 2) //Static
+	{
+	  GeometryConstruction(1, 1);
+	  RunSystem(kFALSE);
+	}
+	if( menu == 3) //Draw
+	{
+	  GeometryConstruction(1, 1);
+	}
+	if( menu == 4) //Draw World,  No Trees
+	{
+	  GeometryConstruction(1, 0);
+	}
+      }
+     }
+    if( menu == 5) //Debug
     {
       SolarInput(1);
       LSysTree(5);
       GeometryConstruction();
      
     }
+   }
+   */
   
-  }
 }
 void Splash() //Spash Screen Introduction, Lists commands
 {
@@ -151,8 +193,8 @@ void MainMenu() //Main Menu , Lists commands
   cout << "	1 - Run All As Default"<< endl;
   cout << "	2 - L-System Management"<< endl;
   cout << "	3 - SMARTS Solar Input"<< endl;
-  cout << "	* - SLitrani Management"<< endl;
-  cout << "	5 - Draw World **Debug**"<< endl;
+  cout << "	4 - Simulation Management"<< endl;
+  cout << "	5 - **Debug**"<< endl;
 
 }
 void LSysMenu() //L-System Menu, Lists commands
@@ -175,6 +217,18 @@ void SMARTSMenu() //SMARTS Menu, Lists commands
   cout << "	2 - Use Default & Print to Screen"	<< endl;
   cout << "	3 - Manually Specify Smarts File"	<< endl;
   cout << "	* - Draw Spectra"			<< endl;
+
+}                                                          
+void SimMenu()
+{
+  cout << "-------------------------------------------------"<< endl;
+  cout << "Simulation Menu:    	(* = Not Yet Functional)"<< endl;
+  cout << "	0 - Back"			<< endl;
+  cout << "	1 - Run Full Simulation"	<< endl;
+  cout << "	2 - Run Static Simulation"	<< endl;
+  cout << "	3 - Draw Only"	<< endl;
+  cout << "	4 - Draw World Only (no tree)"			<< endl;
+
 
 }
 void LSysTree(Int_t n) //Manages L-System Commands, "n" is number of derivations
@@ -203,32 +257,7 @@ void LSysTree(Int_t n) //Manages L-System Commands, "n" is number of derivations
     }
 
 }
-void LoadSim() //Manages Simulation
-{
 
-  int acceptedinput = 0;
-  while(acceptedinput != 1)
-  {
-    Double_t yes_no;
-    cout << "Do You Want to Run the simulation (or just draw)? (Run=(1)/Draw=(0)):"<< endl << flush;
-    cin >> yes_no;
-    if( yes_no == 1)
-      {
-        cout << "Running Simulation"<< endl;
-        RunSystem(kFALSE,kTRUE);
-        acceptedinput=1;
-      }
-    if( yes_no == 0)
-      {
-         cout << "Drawing Only"<< endl;
-         RunSystem(kTRUE,kTRUE);
-         acceptedinput=1;
-      }
-
-   }
-
-
-}
 
 //L-System - String Functions
 void ChangeString( TString s2 ) //Applies New string
@@ -675,13 +704,12 @@ void DrawNodes2D(const char* fname, const char* vars) //Draws Nodes in 2 Dimensi
 }
 
 //SLitrani - Simulation Commands
-void RunSystem(Bool_t  drawonly,Bool_t  motion) //Runs Siulation with Slitrani
+void RunSystem(Bool_t  motion) //Runs Siulation with Slitrani
 {
 
   
   
-    //Load generated spectra
-    plastic->FindSpectrum("Spectrum_AM1_5G");
+    
     // Shifts sun just below horizon
     phsun-> RotateY(7.5);
     //
@@ -850,6 +878,8 @@ void GeometryConstruction(Int_t funct, Int_t treefunct) //Builds the world to ru
   TVector3 facedir(0.0,0.0,1.0); // axis to follow to reach face of emission
   TVector3 source(0.0,0.0,0.0);  // irrelevant
   lit_fib->SetEmission(flat,180.0,emisdir,"",kFALSE,source,kTRUE,facedir);
+  //Load generated spectra
+  plastic->FindSpectrum("Spectrum_AM1_5G");
 
   // Colors and drawing
   top->SetVisibility(kFALSE);
@@ -866,11 +896,71 @@ void GeometryConstruction(Int_t funct, Int_t treefunct) //Builds the world to ru
   geom->CloseGeometry();
   geom->CheckOverlaps(0.01);
   
-  if( treefunct == 1 )//Draw Complete Tree
+  if( treefunct != 0 )//Draw Complete Tree
   {
-    
-  }
+
+
+    TGeoTranslation *tree_base = new TGeoTranslation("tree_base",0.0,0.0,0.0);
+    TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
+    tot->AddNode(panel,1,panel_pstn);
+    TLitVolume *lit_panel = new TLitVolume(panel);
+    lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
+    // Branches
+
+
+    // Adding Leaves
+    TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
+
+
+
+    //Adding to the world
+    tot->AddNode(tree,1,tree_pstn);
+
+    // Setting Leaves as Detectors
+
+    for() //here needs to go a for statement covering each leaf
+    {
+	TLitVolume *lit_panel = new TLitVolume(panel);
+	lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
+    }
+
+    //____________________________________________________________________________
+    //
+    // Constructing the Tree
+    //____________________________________________________________________________
+    //
+    //Basic Constuction in use
+    const Double_t panel_dx = 4.0;
+    const Double_t panel_dy = 4.0;
+    const Double_t panel_dz = 0.1;
+    Double_t t_panel_tot_z = (2*panel_dz+0.02);
+    TGeoTranslation *panel_pstn = new TGeoTranslation("panel_pstn",0.0,0.0,t_panel_tot_z);
+    TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
+    tot->AddNode(panel,1,panel_pstn);
+    TLitVolume *lit_panel = new TLitVolume(panel);
+    lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
+    // Branches
   
+  
+  
+    // Adding Leaves
+    TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
+  
+  
+  
+    //Adding to the world
+    tot->AddNode(tree,1,tree_pstn);
+  
+    // Setting Leaves as Detectors
+  
+    for() //here needs to go a for statement covering each leaf
+    {
+	TLitVolume *lit_panel = new TLitVolume(panel);
+	lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
+    }
+  
+  }
+    
   if(funct == 1) //Draw only in x3d
   {
       tot->SetVisibility(kFALSE);
@@ -878,80 +968,10 @@ void GeometryConstruction(Int_t funct, Int_t treefunct) //Builds the world to ru
 
       top->Draw("x3d");
   }
-  if( funct ==2 )
-  {
-    
-  }
 
  
 }
-void TreeConstruction()
-{
-  
-/*
 
-  TGeoTranslation *tree_base = new TGeoTranslation("tree_base",0.0,0.0,0.0);
-  TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
-  tot->AddNode(panel,1,panel_pstn);
-  TLitVolume *lit_panel = new TLitVolume(panel);
-  lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
-  // Branches
-
-
-  // Adding Leaves
-  TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
-
-
-
-  //Adding to the world
-  tot->AddNode(tree,1,tree_pstn);
-
-  // Setting Leaves as Detectors
-
-  for() //here needs to go a for statement covering each leaf
-  {
-      TLitVolume *lit_panel = new TLitVolume(panel);
-      lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
-  }
-*/
-
-  /*
-    //____________________________________________________________________________
-  //
-  // Constructing the Tree
-  //____________________________________________________________________________
-  //
-  //Basic Constuction in use
-  const Double_t panel_dx = 4.0;
-  const Double_t panel_dy = 4.0;
-  const Double_t panel_dz = 0.1;
-  Double_t t_panel_tot_z = (2*panel_dz+0.02);
-  TGeoTranslation *panel_pstn = new TGeoTranslation("panel_pstn",0.0,0.0,t_panel_tot_z);
-  TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
-  tot->AddNode(panel,1,panel_pstn);
-  TLitVolume *lit_panel = new TLitVolume(panel);
-  lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
-  // Branches
-
-
-/*
-  // Adding Leaves
-  TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
-
-
-
-  //Adding to the world
-  tot->AddNode(tree,1,tree_pstn);
-
-  // Setting Leaves as Detectors
-
-  for() //here needs to go a for statement covering each leaf
-  {
-      TLitVolume *lit_panel = new TLitVolume(panel);
-      lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
-  }
-*/
-}
 int SolarInput(Int_t solaroptions) // Uses a SMARTS output to make a spectra for SLitrani Solar source
 {
 
