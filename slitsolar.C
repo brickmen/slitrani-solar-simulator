@@ -40,8 +40,7 @@ TFile *f = new TFile("solarfiles.root","RECREATE");
 TH1F *h1 = new TH1F("h1","basis",2002,280.0,4000.0);
 TTree *t = new TTree("ntuple","data from csv file");
 
-//Prepare the Geometry
-TGeoManager *geom = new TGeoManager("setup","Solar Panel of new Litrani");
+
 
 //User Interface and Main Program
 void slitsolar() //Main Steering Function
@@ -69,7 +68,7 @@ void slitsolar() //Main Steering Function
     {
       SolarInput(1);
       LSysTree(5);
-      GeometryConstruction();
+      GeometryWorldConstruction();
 
       
       
@@ -716,8 +715,9 @@ void RunSystem(Bool_t  drawonly,Bool_t  motion) //Runs Siulation with Slitrani
     TLit::Get()->CloseFiles();
   
 }
-void GeometryConstruction()
+void GeometryWorldConstruction()
 {
+  TGeoManager *geom = new TGeoManager("setup","Solar Panel of new Litrani");
   
   const char *comTL = "simple solar panel";
   const Color_t  TotAbsColor    =  1;
@@ -851,8 +851,24 @@ void GeometryConstruction()
   TVector3 source(0.0,0.0,0.0);  // irrelevant
   lit_fib->SetEmission(flat,180.0,emisdir,"",kFALSE,source,kTRUE,facedir);
 
+  // Colors and drawing
+  top->SetVisibility(kFALSE);
+  top->SetVisContainers();
+  top->SetLineColor(1);
+  top->SetLineWidth(1);
+  tot->SetVisibility(kTRUE);
+  fib->SetVisibility(kTRUE);
+  fib->SetLineColor(FibreColor);
+  fib->SetLineWidth(1);
+  gGeoManager->SetTopVisible(1);
+  gGeoManager->SetVisLevel(4);
 
 
+ 
+}
+void TreeConstruction()
+{
+  
 /*
 
   TGeoTranslation *tree_base = new TGeoTranslation("tree_base",0.0,0.0,0.0);
@@ -916,42 +932,6 @@ void GeometryConstruction()
       lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
   }
 */
-
-  
-  //____________________________________________________________________________
-  //
-  // Colors and drawing
-  //____________________________________________________________________________
-  //
-  top->SetVisibility(kFALSE);
-  top->SetVisContainers();
-  top->SetLineColor(1);
-  top->SetLineWidth(1);
-  tot->SetVisibility(kTRUE);
-  //panel->SetVisibility(kTRUE);
-  //panel->SetLineColor(PanelColor);
-  //panel->SetLineWidth(1);
-  fib->SetVisibility(kTRUE);
-  fib->SetLineColor(FibreColor);
-  fib->SetLineWidth(1);
-  gGeoManager->SetTopVisible(1);
-  gGeoManager->SetVisLevel(4);
-
-  //____________________________________________________________________________
-  //____________________________________________________________________________
-  //
-  // Generation of photons OR Draw Only
-  //____________________________________________________________________________
-  //____________________________________________________________________________
-  //
-
-  tot->SetVisibility(kFALSE);
-  phsun-> RotateY(-45.0);
-
-  top->Draw("x3d");
-  
-
- 
 }
 int SolarInput(Int_t solaroptions) // Uses a SMARTS output to make a spectra for SLitrani Solar source
 {
@@ -1051,4 +1031,13 @@ int SolarInput(Int_t solaroptions) // Uses a SMARTS output to make a spectra for
   //
    f->Write();
     return 1;
+}
+void DrawWorld()
+{
+  TGeoManager *geom = TGeoManager("setup","Solar Panel of new Litrani");
+  tot->SetVisibility(kFALSE);
+  phsun-> RotateY(-45.0);
+
+  top->Draw("x3d");
+  
 }
