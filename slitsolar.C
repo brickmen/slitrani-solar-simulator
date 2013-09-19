@@ -17,6 +17,7 @@ Float_t Length;		 // Length of branch
 TVector3 vH;		 // Heading Vector
 TVector3 vL;		 // Left Vector
 TVector3 vU( 0, 0, 1.0); // Up Vector (constant in world)
+TString fout;		 // Filename Final Tree Stored In
 
 
 //L-System Tree Global Values
@@ -51,8 +52,11 @@ void slitsolar() //Main Steering Function
   Splash();
   
   SolarInput(1);
-  
-  GeometryConstruction(1, 0);
+  LSysTree(3);
+  //
+  // first value: 1 - draw only,  2 - sim with motion ,  3 - sim No Motion
+  // second value: 0 - no tree,  1 - all tree,  2 - branches only
+  SLitSimulation(1, 2);                                    
   
   RunSystem(kTRUE);
   
@@ -76,7 +80,7 @@ void slitsolar() //Main Steering Function
     {
       SolarInput(1);
       LSysTree(5);
-      GeometryConstruction();
+      SLitSimulation();
 
       
       
@@ -139,22 +143,22 @@ void slitsolar() //Main Steering Function
 	}
 	if( menu == 1) //Full
 	{
-	  GeometryConstruction(1, 1);
+	  SLitSimulation(1, 1);
 	  RunSystem(kTRUE);
 	  
 	}
 	if( menu == 2) //Static
 	{
-	  GeometryConstruction(1, 1);
+	  SLitSimulation(1, 1);
 	  RunSystem(kFALSE);
 	}
 	if( menu == 3) //Draw
 	{
-	  GeometryConstruction(1, 1);
+	  SLitSimulation(1, 1);
 	}
 	if( menu == 4) //Draw World,  No Trees
 	{
-	  GeometryConstruction(1, 0);
+	  SLitSimulation(1, 0);
 	}
       }
      }
@@ -162,7 +166,7 @@ void slitsolar() //Main Steering Function
     {
       SolarInput(1);
       LSysTree(5);
-      GeometryConstruction();
+      SLitSimulation();
      
     }
    }
@@ -243,7 +247,7 @@ void LSysTree(Int_t n) //Manages L-System Commands, "n" is number of derivations
         const char* num;
         num = Form( "%d", i);
         foutname.Replace(4,3,num);
-        TString fout = foutname + fextension;
+        fout = foutname + fextension;
         cout  << "  File output:" << fout << endl;
 
         WriteTree( fout, i);
@@ -704,45 +708,7 @@ void DrawNodes2D(const char* fname, const char* vars) //Draws Nodes in 2 Dimensi
 }
 
 //SLitrani - Simulation Commands
-void RunSystem(Bool_t  motion) //Runs Siulation with Slitrani
-{
-
-  
-  
-    
-    // Shifts sun just below horizon
-    phsun-> RotateY(7.5);
-    //
-    Int_t krun;
-    const Int_t nrun = 27;
-    const Int_t nbphot = 4000;
-    Double_t angstep   = 7.5;
-    TLit::Get()->BookCanvas();
-    gTwoPad->SetAllGrey();
-    gTwoPad->CommentTL(comTL);
-    //  gStyle->SetCanvasPreferGL(kTRUE);
-    // top->Draw("ogl");
-    top->Draw("");
-    TLitSpontan *solar_source;
-    solar_source = new TLitSpontan("Sun","Sun","/TOP_1/TOT_1/FIB_1", kTRUE,kTRUE);
-    solar_source->TrackToDraw(4);
-    solar_source->MoveCradle(phsun,kTRUE);
-    for (krun=1;krun<=nrun;krun++) {
-      solar_source->Gen(krun,nbphot);
-      //rotation
-      if (krun != nrun && motion) {
-        phsun-> RotateY(-(angstep));
-        solar_source->MoveCradle(phsun,kTRUE);
-        }
-    }
-    gLitGp->SetTitle("wavelength of solar_source");
-    gLitGp->Summary();
-    gTwoPad->ChangePad();
-    gLitGs->DoStat();
-    TLit::Get()->CloseFiles();
-  
-}
-void GeometryConstruction(Int_t funct, Int_t treefunct) //Builds the world to run the simulation within
+void SLitSimulation(Int_t funct, Int_t treefunct) //Builds the world to run the simulation within
 {
   
   TGeoManager *geom = new TGeoManager("setup","Solar Panel of new Litrani");
@@ -878,9 +844,7 @@ void GeometryConstruction(Int_t funct, Int_t treefunct) //Builds the world to ru
   TVector3 facedir(0.0,0.0,1.0); // axis to follow to reach face of emission
   TVector3 source(0.0,0.0,0.0);  // irrelevant
   lit_fib->SetEmission(flat,180.0,emisdir,"",kFALSE,source,kTRUE,facedir);
-  //Load generated spectra
-  plastic->FindSpectrum("Spectrum_AM1_5G");
-
+  
   // Colors and drawing
   top->SetVisibility(kFALSE);
   top->SetVisContainers();
@@ -898,6 +862,16 @@ void GeometryConstruction(Int_t funct, Int_t treefunct) //Builds the world to ru
   
   if( treefunct != 0 )//Draw Complete Tree
   {
+    //Load Tree Values
+    TFile *f = new TFile(fout);
+    TTree *T = (TTree*)f->Get("Tnodes");
+    Int_t file_line;
+    
+    //Build Branches
+    
+    
+    T->GetEntry(line_identifier);
+    T->Show(line_identifier);
 
 
     TGeoTranslation *tree_base = new TGeoTranslation("tree_base",0.0,0.0,0.0);
@@ -960,13 +934,50 @@ void GeometryConstruction(Int_t funct, Int_t treefunct) //Builds the world to ru
     }
   
   }
-    
+  
+
   if(funct == 1) //Draw only in x3d
   {
       tot->SetVisibility(kFALSE);
       phsun-> RotateY(-45.0);
 
       top->Draw("x3d");
+  }
+  else //Run Sumulation
+  {
+        //Load generated spectra
+	plastic->FindSpectrum("Spectrum_AM1_5G");
+	 // Shifts sun just below horizon
+      phsun-> RotateY(7.5);
+      //
+      Int_t krun;
+      const Int_t nrun = 27;
+      const Int_t nbphot = 4000;
+      Double_t angstep   = 7.5;
+      TLit::Get()->BookCanvas();
+      gTwoPad->SetAllGrey();
+      gTwoPad->CommentTL(comTL);
+      //  gStyle->SetCanvasPreferGL(kTRUE);
+      // top->Draw("ogl");
+      top->Draw("");
+      TLitSpontan *solar_source;
+      solar_source = new TLitSpontan("Sun","Sun","/TOP_1/TOT_1/FIB_1", kTRUE,kTRUE);
+      solar_source->TrackToDraw(4);
+      solar_source->MoveCradle(phsun,kTRUE);
+      for (krun=1;krun<=nrun;krun++) {
+	solar_source->Gen(krun,nbphot);
+	//rotation
+	if (krun != nrun && funct == 2 ) //Run with Motion                         
+	{
+	  phsun-> RotateY(-(angstep));
+	  solar_source->MoveCradle(phsun,kTRUE);
+	}
+      }
+      gLitGp->SetTitle("wavelength of solar_source");
+      gLitGp->Summary();
+      gTwoPad->ChangePad();
+      gLitGs->DoStat();
+      TLit::Get()->CloseFiles();
   }
 
  
