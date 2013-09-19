@@ -677,8 +677,7 @@ void DrawNodes2D(const char* fname, const char* vars) //Draws Nodes in 2 Dimensi
 //SLitrani - Simulation Commands
 void RunSystem(Bool_t  drawonly,Bool_t  motion) //Runs Siulation with Slitrani
 {
-  geom->CloseGeometry();
-  geom->CheckOverlaps(0.01);
+
   
   
     //Load generated spectra
@@ -715,8 +714,9 @@ void RunSystem(Bool_t  drawonly,Bool_t  motion) //Runs Siulation with Slitrani
     TLit::Get()->CloseFiles();
   
 }
-void GeometryWorldConstruction()
+void GeometryConstruction(Int_t funct, Int_t treefunct) //Builds the world to run the simulation within
 {
+  
   TGeoManager *geom = new TGeoManager("setup","Solar Panel of new Litrani");
   
   const char *comTL = "simple solar panel";
@@ -863,6 +863,25 @@ void GeometryWorldConstruction()
   gGeoManager->SetTopVisible(1);
   gGeoManager->SetVisLevel(4);
 
+  geom->CloseGeometry();
+  geom->CheckOverlaps(0.01);
+  
+  if( treefunct == 1 )//Draw Complete Tree
+  {
+    
+  }
+  
+  if(funct == 1) //Draw only in x3d
+  {
+      tot->SetVisibility(kFALSE);
+      phsun-> RotateY(-45.0);
+
+      top->Draw("x3d");
+  }
+  if( funct ==2 )
+  {
+    
+  }
 
  
 }
@@ -1031,13 +1050,4 @@ int SolarInput(Int_t solaroptions) // Uses a SMARTS output to make a spectra for
   //
    f->Write();
     return 1;
-}
-void DrawWorld()
-{
-  TGeoManager *geom = TGeoManager("setup","Solar Panel of new Litrani");
-  tot->SetVisibility(kFALSE);
-  phsun-> RotateY(-45.0);
-
-  top->Draw("x3d");
-  
 }
