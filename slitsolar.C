@@ -21,9 +21,9 @@ TString fout;		 // Filename Final Tree Stored In
 
 
 //L-System Tree Global Values
-Float_t d1	= 94.74; 	// Divergence Angle 1
-Float_t d2	= 132.63; 	// Divergence angle 2
-Float_t a	= 18.95;	// Branching Angle
+Float_t d1	= 94.74; 	// Divergence Angle 1	94.74
+Float_t d2	= 132.63; 	// Divergence angle 2	132.63
+Float_t a	= 18.95;	// Branching Angle	18.95
 Float_t lr 	=1.109;		// Elongation Rate
 Float_t vr	=1.732;		// Width Increase Rate
 
@@ -58,7 +58,7 @@ void slitsolar() //Main Steering Function
   // second value: 0 - no tree,  1 - all tree,  2 - branches only
   SLitSimulation(1, 2);                                    
   
-  RunSystem(kTRUE);
+
   
   
   /* Hidden Menu System
@@ -261,7 +261,6 @@ void LSysTree(Int_t n) //Manages L-System Commands, "n" is number of derivations
     }
 
 }
-
 
 //L-System - String Functions
 void ChangeString( TString s2 ) //Applies New string
@@ -708,7 +707,7 @@ void DrawNodes2D(const char* fname, const char* vars) //Draws Nodes in 2 Dimensi
 }
 
 //SLitrani - Simulation Commands
-void SLitSimulation(Int_t funct, Int_t treefunct) //Builds the world to run the simulation within
+void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and runs the simulation or just draws
 {
   
   TGeoManager *geom = new TGeoManager("setup","Solar Panel of new Litrani");
@@ -857,22 +856,85 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Builds the world to run the 
   gGeoManager->SetTopVisible(1);
   gGeoManager->SetVisLevel(4);
 
-  geom->CloseGeometry();
-  geom->CheckOverlaps(0.01);
   
-  if( treefunct != 0 )//Draw Complete Tree
+  if( treefunct != 0 )//Draw Complete Tree 
   {
-    //Load Tree Values
+    //Load Tree Values from tree
     TFile *f = new TFile(fout);
     TTree *T = (TTree*)f->Get("Tnodes");
-    Int_t file_line;
+    Long64_t nlines = T->GetEntries();
+    Long64_t file_line;
+    Float_t vHx,vHy,vHz;
+    //Links parameters to the Tree structure
+    T->SetBranchAddress("Run",&Run);
+    T->SetBranchAddress("Event",&Event);
+    T->SetBranchAddress("Leaf",&Leaf);
+    T->SetBranchAddress("x",&x);
+    T->SetBranchAddress("y",&y);
+    T->SetBranchAddress("z",&z);
+    T->SetBranchAddress("Width",&Width);
+    T->SetBranchAddress("Length",&Length);
+    T->SetBranchAddress("vHx",&vHx);
+    T->SetBranchAddress("vHy",&vHy);
+    T->SetBranchAddress("vHz",&vHz);
+    
+    
     
     //Build Branches
+    for (file_line=0; file_line < nlines; file_line++)
+    {
+      cout << "Line_Number : "<< file_line << endl;
+      T->GetEntry(file_line);
+      
+      //set Heading Vector
+      vH.SetXYZ(vHx,vHy,vHz);
+     
+      
+      if( treefunct == 2 && Leaf == 0) // -> branches only
+      {
+	cout << "	Branch At Number" << endl;
+	const char* num;
+	num = Form( "%d", file_line);
+	TString geooutname = "br_000";
+	geooutname.Replace(3,3,num);
+	cout  << "	Geometry output:" << geooutname << endl;
+	
+	/*
+	TString geopstnname = "pstn_";
+	geopstnname += geooutname;
+	cout  << "	Geometry position:" << geopstnname << endl;
+	TGeoTranslation *tree_position = new TGeoTranslation(geopstnname,x,y,z);
+	TMath::RadToDeg()
+	*/
+	cout  << "	Phi output:" << TMath::RadToDeg()*vH.Phi() << endl;
+	cout  << "	theta output:" << TMath::RadToDeg()*vH.Theta() << endl;
+	TGeoRotation rbranch;
+        rbranch.SetAngles(  TMath::RadToDeg()*vH.Phi(), TMath::RadToDeg()*vH.Theta(), 0);
+        TGeoTranslation tbranch(x,y,(z+(0.5*Length)));
+        TGeoCombiTrans *cbranch = new TGeoCombiTrans(tbranch,rbranch);
+        TGeoHMatrix *phbranch = new TGeoHMatrix(*cbranch);
+	
+	TGeoVolume *branch = geom->MakeTube(geooutname,plastic,0.0,(Width),(Length));
+	
+	tot_disc->AddNode(branch,file_line, phbranch);
+	
+      }
+      if( treefunct == 2 && Leaf == 1) // -> leaves only
+      {
+	cout << "	Leaf At Number " << endl;
+	const char* num;
+	num = Form( "%d", file_line);
+	TString geooutname = "le_000";
+	geooutname.Replace(3,3,num);
+	cout  << "	Geometry output:" << geooutname << endl;
+	//TGeoVolume *fib = geom->MakeTube("FIB",plastic,0.0,fib_r,fib_dz)
+      }
+      
+      
+    }
     
     
-    T->GetEntry(line_identifier);
-    T->Show(line_identifier);
-
+    /*
 
     TGeoTranslation *tree_base = new TGeoTranslation("tree_base",0.0,0.0,0.0);
     TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
@@ -932,10 +994,15 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Builds the world to run the 
 	TLitVolume *lit_panel = new TLitVolume(panel);
 	lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
     }
+    */
   
   }
   
 
+  //Close the Geometry, checking for overlaps
+  geom->CloseGeometry();
+  geom->CheckOverlaps(0.01);
+  
   if(funct == 1) //Draw only in x3d
   {
       tot->SetVisibility(kFALSE);
@@ -945,9 +1012,9 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Builds the world to run the 
   }
   else //Run Sumulation
   {
-        //Load generated spectra
-	plastic->FindSpectrum("Spectrum_AM1_5G");
-	 // Shifts sun just below horizon
+      //Load generated spectra
+      plastic->FindSpectrum("Spectrum_AM1_5G");
+      // Shifts sun just below horizon
       phsun-> RotateY(7.5);
       //
       Int_t krun;
