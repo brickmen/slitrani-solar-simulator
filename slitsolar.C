@@ -24,8 +24,8 @@ TString fout;		 // Filename Final Tree Stored In
 Float_t d1	= 94.74; 	// Divergence Angle 1	94.74
 Float_t d2	= 132.63; 	// Divergence angle 2	132.63
 Float_t a	= 18.95;	// Branching Angle	18.95
-Float_t lr 	=1.109;		// Elongation Rate
-Float_t vr	=1.732;		// Width Increase Rate
+Float_t lr 	= 1.109;	// Elongation Rate
+Float_t vr	= 1.732;	// Width Increase Rate
 
 //L-System Tree Axiom
 TString s = "!(1)F(200)/(45)A";
@@ -35,6 +35,7 @@ char *name    = "MDASim";
 char *listing = "MDASim";
 char *upcom   = "SLitrani Solar simulation";
 char *downcom = "By Michael Abbott";
+Float_t Scale = 0.01; //Constuction scale down of L-System to fit in world
 
 //Solar Spectrum Setup
 TFile *f = new TFile("solarfiles.root","RECREATE");
@@ -52,7 +53,7 @@ void slitsolar() //Main Steering Function
   Splash();
   
   SolarInput(1);
-  LSysTree(3);
+  LSysTree(1);
   //
   // first value: 1 - draw only,  2 - sim with motion ,  3 - sim No Motion
   // second value: 0 - no tree,  1 - all tree,  2 - branches only
@@ -242,7 +243,7 @@ void LSysTree(Int_t n) //Manages L-System Commands, "n" is number of derivations
     for (Int_t i=0; i < n; i++) {
 
         cout << "Run Number: "<< i << endl;
-        OutputString();
+       // OutputString();
       // Num is assigned for filename and then added into the string, works for up to 99 installments
         const char* num;
         num = Form( "%d", i);
@@ -292,7 +293,7 @@ void DerivationString(Int_t run_number)
      svalue = "";
      
      
-     //open value
+     //open value, char is now (
      i++;
      sd += "(";
      
@@ -325,7 +326,7 @@ void DerivationString(Int_t run_number)
      //Temp Location to store string with float value
      svalue = "";
      
-     //open value
+     //open value, char is now (
      i++;
      sd += "(";
      
@@ -450,11 +451,11 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
     Float_t pHz[run_number]= {};
     Int_t push_position = -1; //Initialises storage as first command is to increase this by 1
 
-    cout << "	Push Mem Allocated"  <<endl;
+    //cout << "	Push Mem Allocated"  <<endl;
     //Initial Set of positions, ie. ground Zero, zero Length Branch
     vH = vU; //Set heading to point up
-    cout << "	Init vH"  <<endl;
-    cout<<"vH = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
+    //cout << "	Init vH"  <<endl;
+    //cout<<"vH = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
     vHx = vH.X();
     vHy = vH.Y();
     vHz = vH.Z();
@@ -466,16 +467,17 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
     Leaf = 0 ;
     Width = 1.0 ;
     Length = 0.0 ;
-    cout << "	Ready to Fill Tree"  <<endl;
+    
     
     
     T->Fill();
     
 
     vL = vH.Orthogonal();
-    cout << "	Init vL"  <<endl;
+    //cout << "	Init vL"  <<endl;
     
-    cout << "	Init State Set"  <<endl;
+    //cout << "	Init State Set"  <<endl;
+    cout << "	Initial State Set: Ready to Fill Tree"  <<endl;
     
     // Loop over n entries in string and fill the tree:
     for (Int_t i=0; i < nchar; i++) {
@@ -488,13 +490,8 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
       
       if(s[i]=='!') //Set Branch Width
       {
-	
-        
-    
-	//Temp Location to store string with float value
-	svalue = "";
 
-	//open value
+	//open value, char is now (
 	i++;
 
         //Read Value in Brackets
@@ -520,13 +517,8 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
       } 
       if(s[i]=='F') //Straight Line, and branch growth
       {
-	
-        
-    
-	//Temp Location to store string with float value
-	svalue = "";
-	
-	//open value
+
+	//open value, char is now (
 	i++;
 	
         //Read Value in Brackets
@@ -542,6 +534,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
       
 	//cout << "	string value, fvalue:" << fvalue << endl;
  	
+	//Stores Node
 	//Sets Values for Tree Storage
 	Event ++;
         Leaf = 0; 
@@ -606,10 +599,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
       if(s[i]=='/') //Rotate about H, turn L by angle
       {
 
-	//Temp Location to store string with float value
-	svalue = "";
-	
-	//open value
+	//open value, char is now (
 	i++;
 	
         //Read Value in Brackets
@@ -630,10 +620,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
       if(s[i]=='&') //Rotate about L, turn H by angle
       {
 
-	//Temp Location to store string with float value
-	svalue = "";
-	
-	//open value
+	//open value, char is now (
 	i++;
 	
         //Read Value in Brackets
@@ -831,7 +818,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
   TGeoVolume *tot = geom->MakeSphere("TOT",vacuum,top_rmin,(top_rmax-0.01),top_thmin,top_thmax,top_phmin,top_phmax);
   top->AddNode(tot,1,new TGeoTranslation("totpstn",0.0,0.0,0.005));
   TGeoVolume *tot_disc = geom->MakeTube("TOT_DISC",totabsorbing,0.0,(top_rmax-0.6),0.0001);
-  tot->AddNode(tot_disc,1,new TGeoTranslation("totpstn",0.0,0.0,0.0));
+  tot->AddNode(tot_disc,1,new TGeoTranslation("totpstn",0.0,0.0,-0.01));
   //
   // The sun, made of plastic
   //
@@ -890,7 +877,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
       vH.SetXYZ(vHx,vHy,vHz);
      
       
-      if( treefunct == 2 && Leaf == 0) // -> branches only
+      if( treefunct == 2 && Leaf == 0 && Length != 0) // -> branches only
       {
 	cout << "	Branch At Number" << endl;
 	const char* num;
@@ -910,16 +897,17 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
 	cout  << "	theta output:" << TMath::RadToDeg()*vH.Theta() << endl;
 	TGeoRotation rbranch;
         rbranch.SetAngles(  TMath::RadToDeg()*vH.Phi(), TMath::RadToDeg()*vH.Theta(), 0);
-        TGeoTranslation tbranch(x,y,(z+(0.5*Length)));
+        TGeoTranslation tbranch(Scale*x,Scale*y,Scale*(z+(0.5*Length)));
         TGeoCombiTrans *cbranch = new TGeoCombiTrans(tbranch,rbranch);
         TGeoHMatrix *phbranch = new TGeoHMatrix(*cbranch);
 	
-	TGeoVolume *branch = geom->MakeTube(geooutname,plastic,0.0,(Width),(Length));
+	TGeoVolume *branch = geom->MakeTube(geooutname,plastic,0.0,(Scale*Width),(Scale*(0.5*Length)));
 	
 	tot_disc->AddNode(branch,file_line, phbranch);
+	branch->SetLineColor(28);
 	
       }
-      if( treefunct == 2 && Leaf == 1) // -> leaves only
+      if( treefunct == 3 && Leaf == 1) // -> leaves only
       {
 	cout << "	Leaf At Number " << endl;
 	const char* num;
