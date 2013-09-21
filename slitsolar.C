@@ -53,7 +53,7 @@ void slitsolar() //Main Steering Function
   Splash();
   
   SolarInput(1);
-  LSysTree(1);
+  LSysTree(3);
   //
   // first value: 1 - draw only,  2 - sim with motion ,  3 - sim No Motion
   // second value: 0 - no tree,  1 - all tree,  2 - branches only
@@ -818,7 +818,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
   TGeoVolume *tot = geom->MakeSphere("TOT",vacuum,top_rmin,(top_rmax-0.01),top_thmin,top_thmax,top_phmin,top_phmax);
   top->AddNode(tot,1,new TGeoTranslation("totpstn",0.0,0.0,0.005));
   TGeoVolume *tot_disc = geom->MakeTube("TOT_DISC",totabsorbing,0.0,(top_rmax-0.6),0.0001);
-  tot->AddNode(tot_disc,1,new TGeoTranslation("totpstn",0.0,0.0,-0.01));
+  tot->AddNode(tot_disc,1,new TGeoTranslation("totpstn",0.0,0.0,0.0));
   //
   // The sun, made of plastic
   //
@@ -892,19 +892,28 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
 	cout  << "	Geometry position:" << geopstnname << endl;
 	TGeoTranslation *tree_position = new TGeoTranslation(geopstnname,x,y,z);
 	TMath::RadToDeg()
+	TMath::RadToDeg()*vH.Phi()
+	TMath::RadToDeg()*vH.Theta()
 	*/
 	cout  << "	Phi output:" << TMath::RadToDeg()*vH.Phi() << endl;
 	cout  << "	theta output:" << TMath::RadToDeg()*vH.Theta() << endl;
 	TGeoRotation rbranch;
-        rbranch.SetAngles(  TMath::RadToDeg()*vH.Phi(), TMath::RadToDeg()*vH.Theta(), 0);
-        TGeoTranslation tbranch(Scale*x,Scale*y,Scale*(z+(0.5*Length)));
+        rbranch.SetAngles( TMath::RadToDeg()*vH.Phi() , TMath::RadToDeg()*vH.Theta() , 0);
+        TGeoTranslation tbranch(Scale*x,Scale*y,Scale*z);
         TGeoCombiTrans *cbranch = new TGeoCombiTrans(tbranch,rbranch);
         TGeoHMatrix *phbranch = new TGeoHMatrix(*cbranch);
+	TGeoTranslation *boxbranch = new TGeoTranslation(0.,0.,(0.5*Scale*Length));
 	
-	TGeoVolume *branch = geom->MakeTube(geooutname,plastic,0.0,(Scale*Width),(Scale*(0.5*Length)));
+	TGeoVolume *branchtub = geom->MakeTube("branchtub",plastic,0.0,(Scale*Width),(Scale*(0.5*Length)));
 	
-	tot_disc->AddNode(branch,file_line, phbranch);
-	branch->SetLineColor(28);
+	TGeoVolume *branchpstn = geom->MakeBox("branchpstn", vacuum, 10., 5., 5.);
+	
+	branchpstn->AddNode(branchtub,1, boxbranch);
+	tot_disc->AddNode(branchpstn,file_line, phbranch);
+	
+	//branchpstn->SetVisibility(kFALSE);
+	
+	branchtub->SetLineColor(28);
 	
       }
       if( treefunct == 3 && Leaf == 1) // -> leaves only
