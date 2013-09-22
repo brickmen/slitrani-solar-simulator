@@ -948,21 +948,27 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
 	*/
 	cout  << "	Phi output:" << TMath::RadToDeg()*vH.Phi() << endl;
 	cout  << "	theta output:" << TMath::RadToDeg()*vH.Theta() << endl;
+	//rotation from heading
 	TGeoRotation rbranch;
         rbranch.SetAngles( TMath::RadToDeg()*vH.Phi() , TMath::RadToDeg()*vH.Theta() , 0);
-        TGeoTranslation tbranch(Scale*x,Scale*y,Scale*z);
+	
+	//start position of branch
+        TGeoTranslation tbranch(Scale*x,Scale*y,(Scale*z+(0.5*Scale*Length)));
+	//combine rotation with start position
         TGeoCombiTrans *cbranch = new TGeoCombiTrans(tbranch,rbranch);
         TGeoHMatrix *phbranch = new TGeoHMatrix(*cbranch);
-	TGeoTranslation *boxbranch = new TGeoTranslation(0.,0.,(0.5*Scale*Length));
+	
+	//position branch within positioning box
+	TGeoTranslation *boxbranch = new TGeoTranslation(0.,0.,0.);
 	
 	TGeoVolume *branchtub = geom->MakeTube("branchtub",plastic,0.0,(Scale*Width),(Scale*(0.5*Length)));
 	
-	TGeoVolume *branchpstn = geom->MakeBox("branchpstn", vacuum, 10., 5., 5.);
+	TGeoVolume *branchpstn = geom->MakeBox("branchpstn", vacuum, (1.05*Scale*Width), (1.05*Scale*Width), (Scale*(0.5*Length)));
 	
 	branchpstn->AddNode(branchtub,1, boxbranch);
 	tot_disc->AddNode(branchpstn,file_line, phbranch);
 	
-	branchpstn->SetVisibility(kFALSE);
+	//branchpstn->SetVisibility(kFALSE);
 	
 	branchtub->SetLineColor(28);
 	
