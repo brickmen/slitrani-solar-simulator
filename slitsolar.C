@@ -279,7 +279,8 @@ void DerivationString(Int_t run_number)
   TString svalue = "";
   Float_t fvalue;
 
-  
+  //addd
+  /*/adddd*/
   Int_t i;
 
   for(i = 0; i <= s.Length(); i++)
@@ -309,7 +310,7 @@ void DerivationString(Int_t run_number)
      //reset svalue
      svalue = "";
      //Write to String
-     svalue = Form( "%g", fvalue);
+    // svalue = Form( "%g", fvalue);
      sd += svalue;
      
      //Close the parenthesis
