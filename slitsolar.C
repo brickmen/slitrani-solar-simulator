@@ -966,12 +966,12 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
 	
 	tot_disc->AddNode(branchdisc,file_line, combibranch);
 	
-	//branchbox->SetVisibility(kFALSE);
+	branchdisc->SetVisibility(kFALSE);
 	
 	branchtub->SetLineColor(28);
 	
       }
-      if( treefunct == 3 && Leaf == 1) // -> leaves only
+      if( treefunct == 2 && Leaf == 1) // -> leaves only
       {
 	cout << "	Leaf At Number " << endl;
 	const char* num;
@@ -979,7 +979,20 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
 	TString geooutname = "le_000";
 	geooutname.Replace(3,3,num);
 	cout  << "	Geometry output:" << geooutname << endl;
-	//TGeoVolume *fib = geom->MakeTube("FIB",plastic,0.0,fib_r,fib_dz)
+	
+	
+	//rotation from heading phi, theta, psi
+	TGeoRotation *rbranch = new TGeoRotation("rbranch", (TMath::RadToDeg()*vH.Phi())+90 , TMath::RadToDeg()*vH.Theta()  , 0);
+	// combine with x,y,z position
+	TGeoCombiTrans *combibranch = new TGeoCombiTrans( Scale*x, Scale*y, Scale*z, rbranch);
+	
+	
+	TGeoVolume *branchdisc = geom->MakeTube("branchdisc",plastic,0.0, 0.1 ,0.001);
+	
+	tot_disc->AddNode(branchdisc,file_line, combibranch);
+	
+	
+	branchdisc->SetLineColor(8);
       }
       
       
@@ -1061,7 +1074,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
       tot->SetVisContainers();
       phsun-> RotateY(-45.0);
 
-      top->Draw("x3d");
+      top->Draw("ogl");
   }
   else //Run Sumulation
   {
