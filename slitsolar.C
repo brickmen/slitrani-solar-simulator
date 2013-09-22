@@ -305,11 +305,9 @@ void DerivationString(Int_t run_number)
        svalue += s[i];
        i++;
      }
-     fvalue = svalue.Atof();
-     //Apply Changes to value
-     fvalue = (fvalue*lr);
-     
-     
+     fvalue = ((svalue.Atof())*vr);
+     //reset svalue
+     svalue = "";
      //Write to String
      svalue = Form( "%g", fvalue);
      sd += svalue;
