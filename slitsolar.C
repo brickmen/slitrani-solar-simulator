@@ -53,7 +53,7 @@ void slitsolar() //Main Steering Function
   Splash();
   
   SolarInput(1);
-  LSysTree(3);
+  LSysTree(7);
   //
   // first value: 1 - draw only,  2 - sim with motion ,  3 - sim No Motion
   // second value: 0 - no tree,  1 - all tree,  2 - branches only
@@ -948,27 +948,25 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
 	*/
 	cout  << "	Phi output:" << TMath::RadToDeg()*vH.Phi() << endl;
 	cout  << "	theta output:" << TMath::RadToDeg()*vH.Theta() << endl;
-	//rotation from heading
-	TGeoRotation rbranch;
-        rbranch.SetAngles( TMath::RadToDeg()*vH.Phi() , TMath::RadToDeg()*vH.Theta() , 0);
 	
-	//start position of branch
-        TGeoTranslation tbranch(Scale*x,Scale*y,(Scale*z+(0.5*Scale*Length)));
-	//combine rotation with start position
-        TGeoCombiTrans *cbranch = new TGeoCombiTrans(tbranch,rbranch);
-        TGeoHMatrix *phbranch = new TGeoHMatrix(*cbranch);
+	//rotation from heading phi, theta, psi
+	TGeoRotation *rbranch = new TGeoRotation("rbranch", (TMath::RadToDeg()*vH.Phi())+90 , TMath::RadToDeg()*vH.Theta()  , 0);
+	// combine with x,y,z position
+	TGeoCombiTrans *combibranch = new TGeoCombiTrans( Scale*x, Scale*y, Scale*z, rbranch);
 	
-	//position branch within positioning box
-	TGeoTranslation *boxbranch = new TGeoTranslation(0.,0.,0.);
+	//position branchtube above positioning disc
+        TGeoTranslation *tbranch = new TGeoTranslation("tbranch",0., 0.,(0.5*Scale*Length));
+	
+	TGeoVolume *branchdisc = geom->MakeTube("branchdisc",vacuum,0.0,(Scale*Width*2),0.01);
 	
 	TGeoVolume *branchtub = geom->MakeTube("branchtub",plastic,0.0,(Scale*Width),(Scale*(0.5*Length)));
 	
-	TGeoVolume *branchpstn = geom->MakeBox("branchpstn", vacuum, (1.05*Scale*Width), (1.05*Scale*Width), (Scale*(0.5*Length)));
 	
-	branchpstn->AddNode(branchtub,1, boxbranch);
-	tot_disc->AddNode(branchpstn,file_line, phbranch);
+	branchdisc->AddNode(branchtub,1, tbranch);
 	
-	//branchpstn->SetVisibility(kFALSE);
+	tot_disc->AddNode(branchdisc,file_line, combibranch);
+	
+	//branchbox->SetVisibility(kFALSE);
 	
 	branchtub->SetLineColor(28);
 	
