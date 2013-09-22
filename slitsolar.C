@@ -279,17 +279,17 @@ void DerivationString(Int_t run_number)
   TString svalue = "";
   Float_t fvalue;
 
-  //addd
-  /*/adddd*/
   Int_t i;
 
   for(i = 0; i <= s.Length(); i++)
   {
 
+    //cout << "s [i]"<< s[i] << endl;
+    
     if(s[i] == 'F')
     {
      sd += "F";
-     
+     //cout << "reading an F"<< endl;
      //Temp Location to store string with float value
      svalue = "";
      
@@ -306,19 +306,21 @@ void DerivationString(Int_t run_number)
        svalue += s[i];
        i++;
      }
-     fvalue = ((svalue.Atof())*vr);
-     //reset svalue
-     svalue = "";
+     fvalue = svalue.Atof();
+     //Apply Changes to value
+     fvalue = (fvalue*lr);
+     
+     
      //Write to String
-    // svalue = Form( "%g", fvalue);
+     svalue = Form( "%g", fvalue);
      sd += svalue;
      
      //Close the parenthesis
      sd += ")";
-     i++;
+     
      
     }
-    if(s[i] == '!')
+    else if(s[i] == '!')
     {
      sd += "!";
      
@@ -348,10 +350,11 @@ void DerivationString(Int_t run_number)
      
      //Close the parenthesis
      sd += ")";
-     i++;
+
+    
      
     }
-    if(s[i] == 'A')
+    else if(s[i] == 'A')
     {
       
       sd += "!(";
@@ -527,7 +530,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 
 	
       } 
-      if(s[i]=='F') //Straight Line, and branch growth
+      else if(s[i]=='F') //Straight Line, and branch growth
       {
 
 	//open value, char is now (
@@ -569,7 +572,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 	
 	cout<<"		F Position |After = x:" << x << "  y:" << y << "  z:" << z << endl;
       }
-      if(s[i]=='A') //Apex, this is leaf position
+      else if(s[i]=='A') //Apex, this is leaf position
       {
 	
 	//Sets value for Apex
@@ -588,7 +591,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 	 vLz = vL.Z();
 	 T->Fill();
       }
-      if(s[i]=='[') //Push Position
+      else if(s[i]=='[') //Push Position
       {
 
           //Push Position
@@ -614,7 +617,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 	  cout<<"		[Push Position | vH set = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
 
       }
-      if(s[i]==']') //Pop Position
+      else if(s[i]==']') //Pop Position
       {
           //Pop Position
 
@@ -636,7 +639,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 	  cout<<"		]Pop Position | vH set = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
 
       }   
-      if(s[i]=='/') //Rotate about H, turn L by angle
+      else if(s[i]=='/') //Rotate about H, turn L by angle
       {
 
 	//open value, char is now (
@@ -661,7 +664,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 	cout<<"		/ Rot about H| vL After = x:" << vL.X() << "  y:" << vL.Y() << "  z:" << vL.Z() << endl;
 
       }
-      if(s[i]=='&') //Rotate about L, turn H by angle
+      else if(s[i]=='&') //Rotate about L, turn H by angle
       {
 
 	//open value, char is now (
