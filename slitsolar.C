@@ -243,7 +243,7 @@ void LSysTree(Int_t n) //Manages L-System Commands, "n" is number of derivations
     for (Int_t i=0; i < n; i++) {
 
         cout << "Run Number: "<< i << endl;
-       // OutputString();
+        OutputString();
       // Num is assigned for filename and then added into the string, works for up to 99 installments
         const char* num;
         num = Form( "%d", i);
@@ -419,8 +419,9 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
     TFile *f = new TFile(filename,"recreate");
     TTree *T = new TTree("Tnodes","Tree Structure");
     
-    //Heading Vector floats for storing to tree
+    //Vector floats for storing to tree
     Float_t vHx,vHy,vHz;
+    Float_t vLx,vLy,vLz;
 
    //Links parameters to the Tree structure
    T->Branch("Run",&Run,"Run/I");
@@ -431,10 +432,12 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
    T->Branch("z",&z,"z/F");
    T->Branch("Width",&Width,"Width/F");
    T->Branch("Length",&Length,"Length/F");
-   //Only headings are stored
    T->Branch("vHx",&vHx,"vHx/F");
    T->Branch("vHy",&vHy,"vHy/F");
    T->Branch("vHz",&vHz,"vHz/F");
+   T->Branch("vLx",&vLx,"vLx/F");
+   T->Branch("vLy",&vLy,"vLy/F");
+   T->Branch("vLz",&vLz,"vLz/F");
    
    
    //Calculates length of string
@@ -449,6 +452,11 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
     Float_t pHx[run_number]= {};
     Float_t pHy[run_number]= {};
     Float_t pHz[run_number]= {};
+    Float_t pLx[run_number]= {};
+    Float_t pLy[run_number]= {};
+    Float_t pLz[run_number]= {};
+    Float_t pLz[run_number]= {};
+    Float_t pWidth[run_number]= {};
     Int_t push_position = -1; //Initialises storage as first command is to increase this by 1
 
     //cout << "	Push Mem Allocated"  <<endl;
@@ -473,6 +481,7 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
     T->Fill();
     
 
+    //initial setup for vL
     vL = vH.Orthogonal();
     //cout << "	Init vL"  <<endl;
     
@@ -508,10 +517,14 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 
      
  
-	//cout << "	string value, fvalue:" << fvalue << endl;
+	//comments
+	cout << "	! Width |Before:" << Width << endl;
         
         //Set Value
         Width = fvalue;
+	
+	//comments
+	cout << "	! Width |After:" << Width << endl;
 
 	
       } 
@@ -542,12 +555,20 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 	vHx = vH.X();
 	vHy = vH.Y();
 	vHz = vH.Z();
+	vLx = vL.X();
+	vLy = vL.Y();
+	vLz = vL.Z();
+	cout << "	Width |Set:" << Width << endl;
         T->Fill();
+	
+	cout<<"		F Position |Before = x:" << x << "  y:" << y << "  z:" << z << endl;
 	
 	//Moves Position for Next Branch
 	x = x + fvalue*( vH.X() );
         y = y + fvalue*( vH.Y() );
         z = z + fvalue*( vH.Z() );
+	
+	cout<<"		F Position |After = x:" << x << "  y:" << y << "  z:" << z << endl;
       }
       if(s[i]=='A') //Apex, this is leaf position
       {
@@ -563,6 +584,9 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
 	 vHx = vH.X();
 	 vHy = vH.Y();
 	 vHz = vH.Z();
+	 vLx = vL.X();
+	 vLy = vL.Y();
+	 vLz = vL.Z();
 	 T->Fill();
       }
       if(s[i]=='[') //Push Position
@@ -578,6 +602,17 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
           pHx[push_position] = vH.X();
           pHy[push_position] = vH.Y();
 	  pHz[push_position] = vH.Z();
+	  
+	  pLx[push_position] = vL.X();
+          pLy[push_position] = vL.Y();
+	  pLz[push_position] = vL.Z();
+	  
+	  pWidth[push_position] = Width;
+	  
+	  cout<<"	[|Push	Width: " << Width<< endl;
+	  cout<<"		[Push Position |Set = x:" << x << "  y:" << y << "  z:" << z << endl;
+	  cout<<"		[Push Position | vL set = x:" << vL.X() << "  y:" << vL.Y() << "  z:" << vL.Z() << endl;
+	  cout<<"		[Push Position | vH set = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
 
       }
       if(s[i]==']') //Pop Position
@@ -587,13 +622,19 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
           x = px[push_position];
           y = py[push_position];
           z = pz[push_position];
+	  
+	  Width = pWidth[push_position];
           
 	  vH.SetXYZ(pHx[push_position],pHy[push_position],pHz[push_position]);
-	  vL = vH.Orthogonal();
+	  vL.SetXYZ(pLx[push_position],pLy[push_position],pLz[push_position]);
        
 	  
           push_position --;
 
+	  cout<<"	]|Pop	Width: " << Width<< endl;
+	  cout<<"		]Pop Position |Set = x:" << x << "  y:" << y << "  z:" << z << endl;
+	  cout<<"		]Pop Position | vL set = x:" << vL.X() << "  y:" << vL.Y() << "  z:" << vL.Z() << endl;
+	  cout<<"		]Pop Position | vH set = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
 
       }   
       if(s[i]=='/') //Rotate about H, turn L by angle
@@ -612,9 +653,13 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
         }
         fvalue = svalue.Atof();
 
-	//cout << "	string value, fvalue:" << fvalue << endl;
+	cout << "		/ Rot about H|angle:" << fvalue << endl;
+	cout<<"		/ Rot about H| vH set = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
+	cout<<"		/ Rot about H| vL Before = x:" << vL.X() << "  y:" << vL.Y() << "  z:" << vL.Z() << endl;
 	
 	vL.Rotate(fvalue*TMath::DegToRad(), vH);
+	
+	cout<<"		/ Rot about H| vL After = x:" << vL.X() << "  y:" << vL.Y() << "  z:" << vL.Z() << endl;
 
       }
       if(s[i]=='&') //Rotate about L, turn H by angle
@@ -633,9 +678,13 @@ void WriteTree(const char* filename, const Int_t run_number) //This Writes the T
         }
         fvalue = svalue.Atof();
      
-	//cout << "	string value, fvalue:" << fvalue << endl;
+	cout << "		& Rot about L|angle:" << fvalue << endl;
+	cout<<"		& Rot about L| vL set = x:" << vL.X() << "  y:" << vL.Y() << "  z:" << vL.Z() << endl;
+	cout<<"		& Rot about L| vH Before = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
 	
 	vH.Rotate(fvalue*TMath::DegToRad(), vL);
+	
+	cout<<"		& Rot about L| vH After = x:" << vH.X() << "  y:" << vH.Y() << "  z:" << vH.Z() << endl;
 
       }
       
@@ -911,7 +960,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
 	branchpstn->AddNode(branchtub,1, boxbranch);
 	tot_disc->AddNode(branchpstn,file_line, phbranch);
 	
-	//branchpstn->SetVisibility(kFALSE);
+	branchpstn->SetVisibility(kFALSE);
 	
 	branchtub->SetLineColor(28);
 	
@@ -1003,6 +1052,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
   if(funct == 1) //Draw only in x3d
   {
       tot->SetVisibility(kFALSE);
+      tot->SetVisContainers();
       phsun-> RotateY(-45.0);
 
       top->Draw("x3d");
