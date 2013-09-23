@@ -1,3 +1,4 @@
+// Unsure if all of these are needed but they are all here
 #include "Riostream.h"
 #include <stdlib.h>
 #include <iostream.h>
@@ -8,7 +9,7 @@
 #include "TString.h"
 #include "TRegexp.h"
 
-//L-System Tree Node Values
+//L-System Tree Node Values. These are accessed and used by most functions hence its easier to have these as global defined
 Int_t Run, Event;	 // Indexes Node
 Int_t Leaf;		 // does branch terminate here? If so -> Leaf = 1 else Leaf = 0
 Float_t x,y,z;		 // Stores Position of Node
@@ -21,160 +22,64 @@ TString fout;		 // Filename Final Tree Stored In
 
 
 //L-System Tree Global Values
-Float_t d1	= 94.74; 	// Divergence Angle 1	94.74
-Float_t d2	= 132.63; 	// Divergence angle 2	132.63
-Float_t a	= 18.95;	// Branching Angle	18.95
-Float_t lr 	= 1.109;	// Elongation Rate
-Float_t vr	= 1.732;	// Width Increase Rate
+//Edit these to change Tree Growth directions, defaluts are in comments
+Float_t d1	= 94.74; 	// Divergence Angle 1	Default:94.74
+Float_t d2	= 132.63; 	// Divergence angle 2	Default:132.63
+Float_t a	= 18.95;	// Branching Angle	Default:18.95
+Float_t lr 	= 1.109;	// Elongation Rate	Default:1.109
+Float_t vr	= 1.732;	// Width Increase Rate	Default:1.732
 
 //L-System Tree Axiom
-TString s = "!(1)F(200)/(45)A";
+TString s = "!(1)F(50)/(45)A"; //This is the initial tree start point, Default: "!(1)F(200)/(45)A"
 
-//Slitrani Setup
-char *name    = "MDASim";
-char *listing = "MDASim";
+//Slitrani comments and filenames
+// Editing these changes the filename SLitrani Uses and the name that appears on the splashscreen
+char *name    = "SLitSim";
+char *listing = "SLitSim";
 char *upcom   = "SLitrani Solar simulation";
 char *downcom = "By Michael Abbott";
+
+//Tree Scale, the tree constructed is too large to fit in SLitrani's world so a scale factor is introduced
 Float_t Scale = 0.01; //Constuction scale down of L-System to fit in world
-
-//Solar Spectrum Setup
-TFile *f = new TFile("solarfiles.root","RECREATE");
-TH1F *h1 = new TH1F("h1","basis",2002,280.0,4000.0);
-TTree *t = new TTree("ntuple","data from csv file");
-
 
 
 //User Interface and Main Program
-void slitsolar() //Main Steering Function
+void slitsolar()
 {
-  //Prepare SLitrani
+  //Prepare SLitrani - Must be run before SLitSimulation AND SolarInput, easiest to run this first
   gROOT->ProcessLine(".x InitSLitrani.C(5,name,listing,upcom,downcom,kFALSE,kTRUE,kFALSE)");
-  
-  Splash();
-  
-  SolarInput(1);
-  LSysTree(7);
-  //
-  // first value: 1 - draw only,  2 - sim with motion ,  3 - sim No Motion
-  // second value: 0 - no tree,  1 - all tree,  2 - branches only
-  SLitSimulation(1, 2);                                    
-  
-
-  
-  
-  /* Hidden Menu System
-  Int_t exit;
-  Int_t menu;
-  Int_t back;
-  
-  while(exit != 1)
-  {
-    
-    MainMenu();
-    cin >> menu;
-    
-    if( menu == 0)
-    {
-      exit=1;
-    }
-    if( menu == 1) //Run All as Default
-    {
-      SolarInput(1);
-      LSysTree(5);
-      SLitSimulation();
-
-      
-      
-    }
-    if( menu == 2) // L-System Management
-    {
-      back = 0;
-      while(back != 1)
-      {
-	LSysMenu();
-	cin >> menu;
-	
-	if( menu == 0)
-	{
-	  back = 1;
-	}
-	if( menu == 1)
-	{
-	  back = 1;
-	}
-      }
-    }
-    if( menu == 3) // SMARTS Menu
-    {
-      back = 0;
-      while(back != 1)
-      {
-	SMARTSMenu();
-	cin >> menu;
-	
-	if( menu == 0)
-	{
-	  back = 1;
-	}
-	if( menu == 1) //Default
-	{
-	  SolarInput(1);
-	}
-	if( menu == 2) //Default With Print
-	{
-	  SolarInput(2);
-	}
-	if( menu == 3) //Manual Entry
-	{
-	  SolarInput(3);
-	}
-      }
-     }
-    if( menu == 4) // Simulation Menu
-    {
-      back = 0;
-      while(back != 1)
-      {
-	SimMenu();
-	cin >> menu;
-	
-	if( menu == 0)
-	{
-	  back = 1;
-	}
-	if( menu == 1) //Full
-	{
-	  SLitSimulation(1, 1);
-	  RunSystem(kTRUE);
-	  
-	}
-	if( menu == 2) //Static
-	{
-	  SLitSimulation(1, 1);
-	  RunSystem(kFALSE);
-	}
-	if( menu == 3) //Draw
-	{
-	  SLitSimulation(1, 1);
-	}
-	if( menu == 4) //Draw World,  No Trees
-	{
-	  SLitSimulation(1, 0);
-	}
-      }
-     }
-    if( menu == 5) //Debug
-    {
-      SolarInput(1);
-      LSysTree(5);
-      SLitSimulation();
-     
-    }
-   }
-   */
-  
+  //The SpashScreen
+  Splash(); 
 }
-void Splash() //Spash Screen Introduction, Lists commands
+void Auto() //Main Steering Function this can be used to Automatically run the system
+{
+  //Loads SMARTS File
+  SolarInput(1);
+  //options:
+  //	1-Uses Default SMARTS file defined in this code as: ASTMG173.csv
+  //	2-Same as above but includes a print to screen of each entry
+  //	3-Manual entry, gives command line control
+  
+  //Prepares L-System String and Calculats position and angles of nodes
+  LSysTree(5);
+  // Option: Number of derivations for Tree Construction
+  // 	!!Caution: Greater this number, the longer it takes to run the simulation
+  
+  //Runs the Simulation in SLitrani
+  SLitSimulation(2, 1,fout);                                    
+  // first option, Simulation:
+  //		1 - draw only in oGL
+  //		2 - Run Simulation with sun motion 
+  //		3 - sim No Motion
+  // second option, Tree Construction: 
+  //		0 - no tree,  
+  //		1 - all tree,  
+  //		2 - branches only
+  //Third Option: Name of tree( run_**.root) file in use for constuction
+  //		Default: fout (the final .root file made in WriteTree)
+
+}
+void Splash() //Spash Screen Introduction
 {
  
   cout << "***********************************************************************************"<< endl;
@@ -183,59 +88,48 @@ void Splash() //Spash Screen Introduction, Lists commands
   
   cout << "	Developed By Michael Abbott (m.d.abbott@warwick.ac.uk)"<< endl;
   
-  cout << "			Version 0.9.1 (18 Sep 2013)"<< endl;
+  cout << "			Version 1.0.0 (23 Sep 2013)"<< endl;
 
   cout << "***********************************************************************************"<< endl;
 
-  cout << "Please Enter Numerical Value to Navigate Menu eg: '0' to quit"<< endl;
+  cout << "Main program can be run by typing: > 'Auto()'; type > 'Help()' for list of commands."<< endl;
 
 }
-void MainMenu() //Main Menu , Lists commands
+void Help() //Lists commands
 {
-  cout << "-------------------------------------------------"<< endl;
-  cout << "Main Menu:    	(* = Not Yet Functional)"<< endl;
-  cout << "	0 - Quit"<< endl;
-  cout << "	1 - Run All As Default"<< endl;
-  cout << "	2 - L-System Management"<< endl;
-  cout << "	3 - SMARTS Solar Input"<< endl;
-  cout << "	4 - Simulation Management"<< endl;
-  cout << "	5 - **Debug**"<< endl;
-
+  cout << "Congratulations for sucessfully installing SLitrani!"<< endl;
+  cout << endl;
+  cout << "There are 3 sections to this applicaton, each is reliant on the previous being run."<< endl;
+  cout << endl;
+  cout << "Stage 1, Solar Input:-> SolarInput(num)"<< endl;
+  cout << "	What it does: Opens the SMARTS file for SLitrani to make a solar realistic spectrum output"<< endl;
+  cout << "	Options Available: num"<< endl;
+  cout << "		num = 1 -> Uses Default SMARTS file defined in this code as: ASTMG173.csv"<< endl;
+  cout << "		num = 2 -> Same as above but includes a print to screen of each entry"<< endl;
+  cout << "		num = 3 -> Manual entry, gives command line control"<< endl;
+  cout << "	Example Command Input: >SolarInput(1)"<< endl;
+  cout << endl;
+  cout << "Stage 2, L-System Generation:-> LSysTree(num)"<< endl;
+  cout << "	What it does: Uses a built in Axiom and derivation based "<< endl;
+  cout << "			on an L-System from Figure 2.8 of The Algorithmic Beauty of Plants."<< endl;
+  cout << "	Options Available: num"<< endl;
+  cout << "		num = Positive Integer -> Number of derivation steps in L-System"<< endl;
+  cout << "		!NOTE: Higher values exponentially increase process time, values ~7 are reasonable."<< endl;
+  cout << "	Example Command Input: >LSysTree(5)"<< endl;
+  cout << endl;
+  cout << "Stage 2, L-System Generation:-> SLitSimulation(num1, num2, fout)"<< endl;
+  cout << "	What it does: Constructs the SLitrani world and the L-System, can also run the simulation."<< endl;
+  cout << "	Options Available: num1, num2, fout"<< endl;
+  cout << "		num1 = 1 -> Draw the system only"<< endl;
+  cout << "		num1 = 2 -> Run the Simulation with solar motion"<< endl;
+  cout << "		num1 = 3 -> Run the simulation with static sun"<< endl;
+  cout << "		num2 = 0 -> World With no tree constucted"<< endl;
+  cout << "		num2 = 1 -> Builds All the Tree"<< endl;
+  cout << "		fout = '''' -> Chooses the run_XX.root file to use;"<< endl;
+  cout << "			'fout' with no quotations automatically uses the final .root file"<< endl;
+  cout << "	Example Command Input: >SLitSimulation(2, 1, fout) or >SLitSimulation(2, 1, ''run_3.root'') "<< endl;
 }
-void LSysMenu() //L-System Menu, Lists commands
-{
-  cout << "-------------------------------------------------"<< endl;
-  cout << "L-System Menu:    	(* = Not Yet Functional)"<< endl;
-  cout << "	0 - Back"<< endl;
-  cout << "	* - Run L-System As Default"<< endl;
-  cout << "	* - Edit Axiom"<< endl;
-  cout << "	* - Change Global Variables"<< endl;
-  cout << "	* - Draw Tree"<< endl;
 
-}
-void SMARTSMenu() //SMARTS Menu, Lists commands
-{
-  cout << "-------------------------------------------------"<< endl;
-  cout << "SMARTS Menu:    	(* = Not Yet Functional)"<< endl;
-  cout << "	0 - Back"			<< endl;
-  cout << "	1 - Use Default (ASTMG173.csv)"	<< endl;
-  cout << "	2 - Use Default & Print to Screen"	<< endl;
-  cout << "	3 - Manually Specify Smarts File"	<< endl;
-  cout << "	* - Draw Spectra"			<< endl;
-
-}                                                          
-void SimMenu()
-{
-  cout << "-------------------------------------------------"<< endl;
-  cout << "Simulation Menu:    	(* = Not Yet Functional)"<< endl;
-  cout << "	0 - Back"			<< endl;
-  cout << "	1 - Run Full Simulation"	<< endl;
-  cout << "	2 - Run Static Simulation"	<< endl;
-  cout << "	3 - Draw Only"	<< endl;
-  cout << "	4 - Draw World Only (no tree)"			<< endl;
-
-
-}
 void LSysTree(Int_t n) //Manages L-System Commands, "n" is number of derivations
 {
     TString foutname = "run_000";
@@ -712,7 +606,7 @@ void PrintNodeEntry(const char* fname, Int_t line_identifier) //Prints Details f
     T->GetEntry(line_identifier);
     T->Show(line_identifier);
 }
-void PrintTreeDetails(const char* fname) //Overall Details of Node Tree
+void PrintTreeDetails(const char* fname) //Summary of Node Tree saved in file
 {
     TFile *f = new TFile(fname);
     TTree *T = (TTree*)f->Get("Tnodes");
@@ -745,7 +639,7 @@ void DrawNodes2D(const char* fname, const char* vars) //Draws Nodes in 2 Dimensi
 }
 
 //SLitrani - Simulation Commands
-void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and runs the simulation or just draws
+void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs the Geometry, and runs the simulation or just draws
 {
   
   TGeoManager *geom = new TGeoManager("setup","Solar Panel of new Litrani");
@@ -898,7 +792,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
   if( treefunct != 0 )//Draw Complete Tree 
   {
     //Load Tree Values from tree
-    TFile *f = new TFile(fout);
+    TFile *f = new TFile(filename);
     TTree *T = (TTree*)f->Get("Tnodes");
     Long64_t nlines = T->GetEntries();
     Long64_t file_line;
@@ -928,7 +822,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
       vH.SetXYZ(vHx,vHy,vHz);
      
       
-      if( treefunct == 2 && Leaf == 0 && Length != 0) // -> branches only
+      if( treefunct == 1 && Leaf == 0 && Length != 0) // -> branches only
       {
 	cout << "	Branch At Number" << endl;
 	const char* num;
@@ -971,7 +865,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
 	branchtub->SetLineColor(28);
 	
       }
-      if( treefunct == 2 && Leaf == 1) // -> leaves only
+      if( treefunct == 1 && Leaf == 1) // -> leaves only
       {
 	cout << "	Leaf At Number " << endl;
 	const char* num;
@@ -984,15 +878,18 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
 	//rotation from heading phi, theta, psi
 	TGeoRotation *rbranch = new TGeoRotation("rbranch", (TMath::RadToDeg()*vH.Phi())+90 , TMath::RadToDeg()*vH.Theta()  , 0);
 	// combine with x,y,z position
-	TGeoCombiTrans *combibranch = new TGeoCombiTrans( Scale*x, Scale*y, Scale*z, rbranch);
+	TGeoCombiTrans *combibranch = new TGeoCombiTrans( Scale*x, Scale*y, (Scale*z+0.001), rbranch);
 	
 	
-	TGeoVolume *branchdisc = geom->MakeTube("branchdisc",plastic,0.0, 0.1 ,0.001);
+	TGeoVolume *leaf = geom->MakeTube("LEAF",silicon,0.0, 0.1 ,0.001);
 	
-	tot_disc->AddNode(branchdisc,file_line, combibranch);
+	tot_disc->AddNode(leaf,file_line, combibranch);
+	
+	TLitVolume *lit_leaf = new TLitVolume(leaf);
+        lit_leaf->SetDetector(kFALSE, "", 180.0, 270.);
 	
 	
-	branchdisc->SetLineColor(8);
+	leaf->SetLineColor(8);
       }
       
       
@@ -1001,7 +898,6 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
     
     /*
 
-    TGeoTranslation *tree_base = new TGeoTranslation("tree_base",0.0,0.0,0.0);
     TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
     tot->AddNode(panel,1,panel_pstn);
     TLitVolume *lit_panel = new TLitVolume(panel);
@@ -1042,24 +938,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
     lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
     // Branches
   
-  
-  
-    // Adding Leaves
-    TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
-  
-  
-  
-    //Adding to the world
-    tot->AddNode(tree,1,tree_pstn);
-  
-    // Setting Leaves as Detectors
-  
-    for() //here needs to go a for statement covering each leaf
-    {
-	TLitVolume *lit_panel = new TLitVolume(panel);
-	lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
-    }
-    */
+  */
   
   }
   
@@ -1118,6 +997,10 @@ void SLitSimulation(Int_t funct, Int_t treefunct) //Constructs the Geometry, and
 
 int SolarInput(Int_t solaroptions) // Uses a SMARTS output to make a spectra for SLitrani Solar source
 {
+    //Solar Spectrum File Setup
+    TFile *f = new TFile("solarfiles.root","RECREATE");
+    TH1F *h1 = new TH1F("h1","basis",2002,280.0,4000.0);
+    TTree *t = new TTree("ntuple","data from csv file");
 
  
       
