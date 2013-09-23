@@ -810,9 +810,9 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
     T->SetBranchAddress("vHy",&vHy);
     T->SetBranchAddress("vHz",&vHz);
     
+    TString leavesscript = "";
     
-    
-    //Build Branches
+    //Construct Trees
     for (file_line=0; file_line < nlines; file_line++)
     {
       cout << "Line_Number : "<< file_line << endl;
@@ -822,14 +822,14 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
       vH.SetXYZ(vHx,vHy,vHz);
      
       
-      if( treefunct == 1 && Leaf == 0 && Length != 0) // -> branches only
+      if( Leaf == 0 && Length != 0) // branches
       {
-	cout << "	Branch At Number" << endl;
+	//cout << "	Branch At Number" << endl;
 	const char* num;
 	num = Form( "%d", file_line);
 	TString geooutname = "br_000";
 	geooutname.Replace(3,3,num);
-	cout  << "	Geometry output:" << geooutname << endl;
+	//cout  << "	Geometry output:" << geooutname << endl;
 	
 	/*
 	TString geopstnname = "pstn_";
@@ -840,8 +840,8 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
 	TMath::RadToDeg()*vH.Phi()
 	TMath::RadToDeg()*vH.Theta()
 	*/
-	cout  << "	Phi output:" << TMath::RadToDeg()*vH.Phi() << endl;
-	cout  << "	theta output:" << TMath::RadToDeg()*vH.Theta() << endl;
+	//cout  << "	Phi output:" << TMath::RadToDeg()*vH.Phi() << endl;
+	//cout  << "	theta output:" << TMath::RadToDeg()*vH.Theta() << endl;
 	
 	//rotation from heading phi, theta, psi
 	TGeoRotation *rbranch = new TGeoRotation("rbranch", (TMath::RadToDeg()*vH.Phi())+90 , TMath::RadToDeg()*vH.Theta()  , 0);
@@ -855,91 +855,54 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
 	
 	TGeoVolume *branchtub = geom->MakeTube("branchtub",plastic,0.0,(Scale*Width),(Scale*(0.5*Length)));
 	
-	
+	//Add tube to disc
 	branchdisc->AddNode(branchtub,1, tbranch);
 	
-	tot_disc->AddNode(branchdisc,file_line, combibranch);
-	
+	//hide disc
 	branchdisc->SetVisibility(kFALSE);
+	
+
+	tot_disc->AddNode(branchdisc,file_line, combibranch);
 	
 	branchtub->SetLineColor(28);
 	
       }
-      if( treefunct == 1 && Leaf == 1) // -> leaves only
+      if( Leaf == 1) // -> leaves only
       {
-	cout << "	Leaf At Number " << endl;
+	//cout << "	Leaf At Number " << endl;
 	const char* num;
 	num = Form( "%d", file_line);
 	TString geooutname = "le_000";
 	geooutname.Replace(3,3,num);
+	TString pstnoutname = "ps_000";
+	pstnoutname.Replace(3,3,num);
 	cout  << "	Geometry output:" << geooutname << endl;
+	cout  << "	Position output:" << pstnoutname << endl;
 	
 	
 	//rotation from heading phi, theta, psi
 	TGeoRotation *rbranch = new TGeoRotation("rbranch", (TMath::RadToDeg()*vH.Phi())+90 , TMath::RadToDeg()*vH.Theta()  , 0);
 	// combine with x,y,z position
-	TGeoCombiTrans *combibranch = new TGeoCombiTrans( Scale*x, Scale*y, (Scale*z+0.001), rbranch);
+	TGeoCombiTrans *combibranch = new TGeoCombiTrans(pstnoutname, Scale*x, Scale*y, (Scale*z+0.001), rbranch);
 	
 	
-	TGeoVolume *leaf = geom->MakeTube("LEAF",silicon,0.0, 0.1 ,0.001);
+	TGeoTube *leaf = new TGeoTube(geooutname,0.0, 0.1 ,0.001);
 	
-	tot_disc->AddNode(leaf,file_line, combibranch);
+	leavesscript += geooutname+":"+pstnoutname+"+";
 	
-	TLitVolume *lit_leaf = new TLitVolume(leaf);
-        lit_leaf->SetDetector(kFALSE, "", 180.0, 270.);
+	//TLitVolume *lit_leaf = new TLitVolume(leaf);
+        //lit_leaf->SetDetector(kFALSE, "", 180.0, 270.);
 	
 	
-	leaf->SetLineColor(8);
+	
       }
       
       
     }
-    
-    
-    /*
+    TGeoCompositeShape *leaves = new TGeoCompositeShape("cs", leavesscript);
+    leaves->SetLineColor(8);
 
-    TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
-    tot->AddNode(panel,1,panel_pstn);
-    TLitVolume *lit_panel = new TLitVolume(panel);
-    lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
-    // Branches
-
-
-    // Adding Leaves
-    TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
-
-
-
-    //Adding to the world
-    tot->AddNode(tree,1,tree_pstn);
-
-    // Setting Leaves as Detectors
-
-    for() //here needs to go a for statement covering each leaf
-    {
-	TLitVolume *lit_panel = new TLitVolume(panel);
-	lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
-    }
-
-    //____________________________________________________________________________
-    //
-    // Constructing the Tree
-    //____________________________________________________________________________
-    //
-    //Basic Constuction in use
-    const Double_t panel_dx = 4.0;
-    const Double_t panel_dy = 4.0;
-    const Double_t panel_dz = 0.1;
-    Double_t t_panel_tot_z = (2*panel_dz+0.02);
-    TGeoTranslation *panel_pstn = new TGeoTranslation("panel_pstn",0.0,0.0,t_panel_tot_z);
-    TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
-    tot->AddNode(panel,1,panel_pstn);
-    TLitVolume *lit_panel = new TLitVolume(panel);
-    lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
-    // Branches
-  
-  */
-  
+   
   }
   
 
@@ -957,6 +920,14 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
   }
   else //Run Sumulation
   {
+
+      //Set Leaves as Detectors
+      if( treefunct == 7)
+      {
+	TLitVolume *lit_leaves = new TLitVolume(leaves);
+        lit_leaves->SetDetector(kFALSE, "", 180.0, 270.);
+      }
+      
       //Load generated spectra
       plastic->FindSpectrum("Spectrum_AM1_5G");
       // Shifts sun just below horizon
