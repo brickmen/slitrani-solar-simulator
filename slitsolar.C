@@ -23,9 +23,9 @@ TString fout;		 // Filename Final Tree Stored In
 
 //L-System Tree Global Values
 //Edit these to change Tree Growth directions, defaluts are in comments
-Float_t d1	= 94.74; 	// Divergence Angle 1	Default:94.74
-Float_t d2	= 132.63; 	// Divergence angle 2	Default:132.63
-Float_t a	= 18.95;	// Branching Angle	Default:18.95
+Float_t d1	= 120; 	// Divergence Angle 1	Default:94.74
+Float_t d2	= 120; 	// Divergence angle 2	Default:132.63
+Float_t a	= 25;	// Branching Angle	Default:18.95
 Float_t lr 	= 1.109;	// Elongation Rate	Default:1.109
 Float_t vr	= 1.732;	// Width Increase Rate	Default:1.732
 
@@ -61,12 +61,12 @@ void Auto() //Main Steering Function this can be used to Automatically run the s
   //	3-Manual entry, gives command line control
   
   //Prepares L-System String and Calculats position and angles of nodes
-  LSysTree(5);
+  LSysTree(7);
   // Option: Number of derivations for Tree Construction
   // 	!!Caution: Greater this number, the longer it takes to run the simulation
   
   //Runs the Simulation in SLitrani
-  SLitSimulation(1, 1,fout);                                    
+  SLitSimulation(2, 1,fout);                                    
   // first option, Simulation:
   //		1 - draw only in oGL
   //		2 - Run Simulation with sun motion 
@@ -763,7 +763,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
   TGeoVolume *tot = geom->MakeSphere("TOT",vacuum,top_rmin,(top_rmax-0.01),top_thmin,top_thmax,top_phmin,top_phmax);
   top->AddNode(tot,1,new TGeoTranslation("totpstn",0.0,0.0,0.005));
   TGeoVolume *tot_disc = geom->MakeTube("TOT_DISC",totabsorbing,0.0,(top_rmax-0.6),0.0001);
-  tot->AddNode(tot_disc,1,new TGeoTranslation("totpstn",0.0,0.0,0.0));
+  tot->AddNodeOverlap(tot_disc,1,new TGeoTranslation("totpstn",0.0,0.0,-0.0001));
   //
   // The sun, made of plastic
   //
@@ -810,9 +810,15 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
     T->SetBranchAddress("vHy",&vHy);
     T->SetBranchAddress("vHz",&vHz);
     
-    //TString leavesscript = "";
     
-    TGeoVolume *leaf = geom->MakeTube("leaf",silicon,0.0, 0.1 ,0.001);
+    
+    TGeoVolume *leaf = geom->MakeTube("LEAF",silicon,0.0, 0.2 ,0.001);
+    //Set Leaves as Detectors
+    
+    TLitVolume *lit_leaf = new TLitVolume(leaf);
+    lit_leaf->SetDetector(kFALSE, "", 180.0, 270.);
+    cout << "leaf set as detector"<< endl;
+    
     
     //Construct Trees
     for (file_line=0; file_line < nlines; file_line++)
@@ -846,14 +852,15 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
 	branchdisc->SetVisibility(kFALSE);
 	
 
-	tot_disc->AddNodeOverlap(branchdisc,file_line, combibranch);
+	tot->AddNodeOverlap(branchdisc,file_line, combibranch);
 	
 	branchtub->SetLineColor(28);
 	
       }
-      if( Leaf == 1) // -> leaves only
+      if( Leaf == 1) // -> leaves
       {
 	/*
+	 * //TString leavesscript = "";
 	//cout << "	Leaf At Number " << endl;
 	const char* num;
 	num = Form( "%d", file_line);
@@ -863,14 +870,6 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
 	pstnoutname.Replace(3,3,num);
 	cout  << "	Geometry output:" << geooutname << endl;
 	cout  << "	Position output:" << pstnoutname << endl;
-	*/
-	
-	//rotation from heading phi, theta, psi
-	TGeoRotation *rbranch = new TGeoRotation("rbranch", (TMath::RadToDeg()*vH.Phi())+90 , TMath::RadToDeg()*vH.Theta()  , 0);
-	// combine with x,y,z position
-	TGeoCombiTrans *combibranch = new TGeoCombiTrans( Scale*x, Scale*y, (Scale*z+0.001), rbranch);
-	//combibranch->SetName(pstnoutname);
-	//combibranch->RegisterYourself(); 
 	
 	//TGeoTube *leaf = new TGeoTube(geooutname,0.0, 0.1 ,0.001);
 	//leaf->SetName(pstnoutname);
@@ -880,15 +879,24 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
 	
 	//TLitVolume *lit_leaf = new TLitVolume(leaf);
         //lit_leaf->SetDetector(kFALSE, "", 180.0, 270.);
+	   // TGeoCompositeShape *leaves = new TGeoCompositeShape("cs", leavesscript);
+    */
 	
+	//rotation from heading phi, theta, psi
+	TGeoRotation *rbranch = new TGeoRotation("rbranch", (TMath::RadToDeg()*vH.Phi())+90 , TMath::RadToDeg()*vH.Theta()  , 0);
+	// combine with x,y,z position
+	TGeoCombiTrans *combibranch = new TGeoCombiTrans( Scale*x, Scale*y, (Scale*z+0.001), rbranch);
 	
+	tot->AddNodeOverlap(leaf,file_line, combibranch);
 	
       }
       
       
     }
-   // TGeoCompositeShape *leaves = new TGeoCompositeShape("cs", leavesscript);
-    //leaves->SetLineColor(8);
+    leaf->SetLineColor(8);
+    
+      
+
 
    
   }
@@ -909,12 +917,6 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
   else //Run Sumulation
   {
 
-      //Set Leaves as Detectors
-      if( treefunct == 7)
-      {
-	TLitVolume *lit_leaves = new TLitVolume(leaves);
-        lit_leaves->SetDetector(kFALSE, "", 180.0, 270.);
-      }
       
       //Load generated spectra
       plastic->FindSpectrum("Spectrum_AM1_5G");
@@ -922,7 +924,7 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
       phsun-> RotateY(7.5);
       //
       Int_t krun;
-      const Int_t nrun = 27;
+      const Int_t nrun = 27; //Default:27
       const Int_t nbphot = 4000;
       Double_t angstep   = 7.5;
       TLit::Get()->BookCanvas();
