@@ -66,7 +66,7 @@ void Auto() //Main Steering Function this can be used to Automatically run the s
   // 	!!Caution: Greater this number, the longer it takes to run the simulation
   
   //Runs the Simulation in SLitrani
-  SLitSimulation(2, 1,fout);                                    
+  SLitSimulation(1, 1,fout);                                    
   // first option, Simulation:
   //		1 - draw only in oGL
   //		2 - Run Simulation with sun motion 
@@ -810,7 +810,9 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
     T->SetBranchAddress("vHy",&vHy);
     T->SetBranchAddress("vHz",&vHz);
     
-    TString leavesscript = "";
+    //TString leavesscript = "";
+    
+    TGeoVolume *leaf = geom->MakeTube("leaf",silicon,0.0, 0.1 ,0.001);
     
     //Construct Trees
     for (file_line=0; file_line < nlines; file_line++)
@@ -824,24 +826,6 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
       
       if( Leaf == 0 && Length != 0) // branches
       {
-	//cout << "	Branch At Number" << endl;
-	const char* num;
-	num = Form( "%d", file_line);
-	TString geooutname = "br_000";
-	geooutname.Replace(3,3,num);
-	//cout  << "	Geometry output:" << geooutname << endl;
-	
-	/*
-	TString geopstnname = "pstn_";
-	geopstnname += geooutname;
-	cout  << "	Geometry position:" << geopstnname << endl;
-	TGeoTranslation *tree_position = new TGeoTranslation(geopstnname,x,y,z);
-	TMath::RadToDeg()
-	TMath::RadToDeg()*vH.Phi()
-	TMath::RadToDeg()*vH.Theta()
-	*/
-	//cout  << "	Phi output:" << TMath::RadToDeg()*vH.Phi() << endl;
-	//cout  << "	theta output:" << TMath::RadToDeg()*vH.Theta() << endl;
 	
 	//rotation from heading phi, theta, psi
 	TGeoRotation *rbranch = new TGeoRotation("rbranch", (TMath::RadToDeg()*vH.Phi())+90 , TMath::RadToDeg()*vH.Theta()  , 0);
@@ -856,19 +840,20 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
 	TGeoVolume *branchtub = geom->MakeTube("branchtub",plastic,0.0,(Scale*Width),(Scale*(0.5*Length)));
 	
 	//Add tube to disc
-	branchdisc->AddNode(branchtub,1, tbranch);
+	branchdisc->AddNodeOverlap(branchtub,1, tbranch);
 	
 	//hide disc
 	branchdisc->SetVisibility(kFALSE);
 	
 
-	tot_disc->AddNode(branchdisc,file_line, combibranch);
+	tot_disc->AddNodeOverlap(branchdisc,file_line, combibranch);
 	
 	branchtub->SetLineColor(28);
 	
       }
       if( Leaf == 1) // -> leaves only
       {
+	/*
 	//cout << "	Leaf At Number " << endl;
 	const char* num;
 	num = Form( "%d", file_line);
@@ -878,17 +863,20 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
 	pstnoutname.Replace(3,3,num);
 	cout  << "	Geometry output:" << geooutname << endl;
 	cout  << "	Position output:" << pstnoutname << endl;
-	
+	*/
 	
 	//rotation from heading phi, theta, psi
 	TGeoRotation *rbranch = new TGeoRotation("rbranch", (TMath::RadToDeg()*vH.Phi())+90 , TMath::RadToDeg()*vH.Theta()  , 0);
 	// combine with x,y,z position
-	TGeoCombiTrans *combibranch = new TGeoCombiTrans(pstnoutname, Scale*x, Scale*y, (Scale*z+0.001), rbranch);
+	TGeoCombiTrans *combibranch = new TGeoCombiTrans( Scale*x, Scale*y, (Scale*z+0.001), rbranch);
+	//combibranch->SetName(pstnoutname);
+	//combibranch->RegisterYourself(); 
 	
+	//TGeoTube *leaf = new TGeoTube(geooutname,0.0, 0.1 ,0.001);
+	//leaf->SetName(pstnoutname);
+	//leaf->RegisterYourself(); 
 	
-	TGeoTube *leaf = new TGeoTube(geooutname,0.0, 0.1 ,0.001);
-	
-	leavesscript += geooutname+":"+pstnoutname+"+";
+	//leavesscript += geooutname+":"+pstnoutname+"+";
 	
 	//TLitVolume *lit_leaf = new TLitVolume(leaf);
         //lit_leaf->SetDetector(kFALSE, "", 180.0, 270.);
@@ -899,8 +887,8 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
       
       
     }
-    TGeoCompositeShape *leaves = new TGeoCompositeShape("cs", leavesscript);
-    leaves->SetLineColor(8);
+   // TGeoCompositeShape *leaves = new TGeoCompositeShape("cs", leavesscript);
+    //leaves->SetLineColor(8);
 
    
   }
