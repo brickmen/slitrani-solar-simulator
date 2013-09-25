@@ -31,6 +31,7 @@ Float_t vr	= 1.732;	// Width Increase Rate	Default:1.732
 
 //L-System Tree Axiom
 TString s = "!(1)F(50)/(45)A"; //This is the initial tree start point, Default: "!(1)F(200)/(45)A"
+Int_t derivations = 7; //Number of derivations, more = larger tree = longer process time
 
 //Slitrani comments and filenames
 // Editing these changes the filename SLitrani Uses and the name that appears on the splashscreen
@@ -40,7 +41,7 @@ char *upcom   = "SLitrani Solar simulation";
 char *downcom = "By Michael Abbott";
 
 //Tree Scale, the tree constructed is too large to fit in SLitrani's world so a scale factor is introduced
-Float_t Scale = 0.01; //Constuction scale down of L-System to fit in world
+Float_t Scale = 0.009; //Constuction scale down of L-System to fit in world
 
 
 //User Interface and Main Program
@@ -61,7 +62,7 @@ void Auto() //Main Steering Function this can be used to Automatically run the s
   //	3-Manual entry, gives command line control
   
   //Prepares L-System String and Calculats position and angles of nodes
-  LSysTree(3);
+  LSysTree(derivations);
   // Option: Number of derivations for Tree Construction
   // 	!!Caution: Greater this number, the longer it takes to run the simulation
   
@@ -778,10 +779,12 @@ void SLitSimulation(Int_t funct, Int_t treefunct, TString filename) //Constructs
   
   // Colors and drawing
   top->SetVisibility(kFALSE);
+  tot->SetVisibility(kFALSE);
+  
   top->SetVisContainers();
   top->SetLineColor(1);
   top->SetLineWidth(1);
-  tot->SetVisibility(kTRUE);
+  
   fib->SetVisibility(kTRUE);
   fib->SetLineColor(FibreColor);
   fib->SetLineWidth(1);
