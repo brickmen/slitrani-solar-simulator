@@ -67,3 +67,9 @@ This'll give you some background to what L-Systems are and how to construct your
 For some inspiration; the issues within this github repository shows some of the features I would have liked to implement into this application if I'd had more time. 
 
 Good luck and I hope you find this application useful, you have my email if you have any queries.
+
+AHHH ITS ALL BROKEN!
+Not a problem, you can reload th original SSS by using git checkout or clone again but you'll lose all changes you've made!
+
+GIT IS COOL CAN I USE IT?
+Yes by all means, just fork this repo and you can start using git and github (excellent guide is available on github). Please let me know if you have done so as I'd love to see what you make.
