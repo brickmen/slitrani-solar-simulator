@@ -55,3 +55,15 @@ The next step may take  while depending on the number of derivations set and you
 This screen has two windows: Left is a 3D graphic of your simulator and Right is a summary of the simulation.
 
 Congratulations, you have now run your first SSS simulation!
+
+WHAT NOW?
+Well now is your time to play, open up slitsolar.C and look over it. I've tried to ensure comments are clear and you can work out what is happening at each stage. The parts that are easiest to edit first are at the beginning of the file.
+
+Typing >Help() at the splash screen should guide you through how to run each function separately.
+
+Take a read over The Algoryhmic Beauty of Plants: http://algorithmicbotany.org/papers/#abop
+This'll give you some background to what L-Systems are and how to construct your own, Ive kept to the script used in this book as closely as possible in this application.
+
+For some inspiration; the issues within this github repository shows some of the features I would have liked to implement into this application if I'd had more time. 
+
+Good luck and I hope you find this application useful, you have my email if you have any queries.
