@@ -1,1 +1,57 @@
 Solar Simulation App With L-System Tree Derivation
+SLitrani-Solar-Simulator (SSS)
+
+This application was developed by Michael Abbott (brickmen) for a URSS project funded by Energy GRP during the summer of 2013. Contact via email at either m.d.abbott@warwick.ac.uk or michael@abbottastro.com.
+
+REQUIREMENTS:
+1. Git, this is the easiest way to download this application to install just run 		something like: >sudo zypper install git 
+    NOTE: If you are running on CSC, you already have git installed! Help is available at http://git-scm.com/book/en/Getting-Started-Installing-Git
+
+2. A working ROOT installation, tested with production Version 5.3.4
+    NOTE: Requires ALL prerequisites before compilation
+    
+3. A working installation of SLitrani
+    NOTE: This isnt easy! 
+    
+    I've created a repo that contains what I believe to be a fixed version of SLitrani together with a guide to install in the readme
+      Access it here: https://github.com/brickmen/slitrani-fixed
+      
+INSTALLATION:
+Compared to the other two, this is easy! Just git clone this repository.
+
+command: >git clone https://github.com/brickmen/slitrani-solar-simulator.git
+
+Then you should see a new folder called "slitrani-solar-simulator", you're all set!
+
+
+FILES & DETAILS:
+Inside the SSS folder will be some files this is what they do:
+1. SplineFitDB.rdb & SpectraDB.rdb
+    Although these arent directly used by SSS, SLitrani likes to have these within the working directory so having then here enables you to run SSS within this directory.
+    
+2. ASTMG173.csv
+    A SMARTS output file containing the spectra for an AM 1.5 spectra that is used by SSS to simulate the sun source, read more about it here: http://rredc.nrel.gov/solar/spectra/am1.5/
+    
+3. histparams.xml
+    This is a configuation file used by SLitrani, it has been modified so that the whole solar spectrum is now within its range.
+    
+4. README
+    You're reading this!
+    
+5. multipanel.C
+    This is an old version of SSS that is handy to keep around as it does NOT have the L-System programming you can test non tree based shapes like flat panels and boxes, this code hasnt been tidied or commented well so refer to slitsolar.C if anything doesnt make sense.
+    
+6. slitsolar.C
+    Saving the best till last! This is the main application that contains all the code to allow you to make L-Systems, build trees and then test them in SLitrani. This is where you'll be having the most fun, and headaches!
+    
+RUNNING SSS
+You've got this far, congratulations!
+To run SSS as I have left it is simple, just oad a terminal window in this directory and type the command: >root slitsolar.C
+
+You'll see the splash screen and SLitrani will have been loaded. Your next step is to run the script, this can be done simply by typing: >Auto() and pressing return.
+
+The next step may take  while depending on the number of derivations set and your computing power, eventually you'll see a screen pop up.
+
+This screen has two windows: Left is a 3D graphic of your simulator and Right is a summary of the simulation.
+
+Congratulations, you have now run your first SSS simulation!
