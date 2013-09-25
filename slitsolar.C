@@ -61,7 +61,7 @@ void Auto() //Main Steering Function this can be used to Automatically run the s
   //	3-Manual entry, gives command line control
   
   //Prepares L-System String and Calculats position and angles of nodes
-  LSysTree(7);
+  LSysTree(3);
   // Option: Number of derivations for Tree Construction
   // 	!!Caution: Greater this number, the longer it takes to run the simulation
   
