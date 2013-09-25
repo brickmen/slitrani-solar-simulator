@@ -98,12 +98,7 @@
   const Double_t top_phmin   = 0.0;
   const Double_t top_phmax   = 360.0;
   //
-  // Dimensions of Panel
-  //
-  const Double_t panel_dx = 4.0;
-  const Double_t panel_dy = 4.0;
-  const Double_t panel_dz = 0.1;
-  //
+
   // Dimensions of Fibre (Sun Source)
   //
   Double_t dist          = (top_rmax - 0.51);
@@ -114,14 +109,7 @@
   //
   // Positionning (translations)
   //____________________________________________________________________________
-  //
-  // Positioning the panel
-  //
-  Double_t t_panel_tot_z = (2*panel_dz+0.02);
-  TGeoTranslation *panel_pstn1 = new TGeoTranslation("panel_pstn1",-4,0.0,t_panel_tot_z);
-  TGeoTranslation *panel_pstn2 = new TGeoTranslation("panel_pstn2",0,0.0,t_panel_tot_z);
-  TGeoTranslation *panel_pstn3 = new TGeoTranslation("panel_pstn3",4,0.0,t_panel_tot_z);
-  //
+  
   //Positioning the Laser
   //
   Double_t t_laser_raduis = top_rmax - 0.51;
@@ -147,15 +135,112 @@
   top->AddNode(tot,1,new TGeoTranslation("totpstn",0.0,0.0,0.005));
   TGeoVolume *tot_disc = geom->MakeTube("TOT_DISC",totabsorbing,0.0,(top_rmax-0.6),0.0001);
   tot->AddNode(tot_disc,1,new TGeoTranslation("totpstn",0.0,0.0,0.0));
-  //
-  TGeoVolume *panel = geom->MakeBox("PANEL",silicon,panel_dx,panel_dy,panel_dz);
+    
   
+  // Dimensions of Panel
+  //
+  const Double_t panel_dx1 = 3.0;
+  const Double_t panel_dx2 = 0.0;
+  const Double_t panel_dy = 2.0;
+  const Double_t panel_dz = 0.1;
+  ////
+  //
+  // Positioning the panel
+  //
+  TGeoRotation r1, r2, r3, r4, r5, r6, r7, r8, r9, r10,r11, r12;
+  Double_t sr2 = TMath::Sqrt(2);
+  Double_t sr2u = (TMath::Sqrt(2))+3;
+  //Panel 1
+  r1.SetAngles(0,45,0.0);
+  TGeoTranslation t1(0, sr2,sr2);
+  TGeoCombiTrans ct1(t1,r1);
+  TGeoHMatrix *panel_pstn1 = new TGeoHMatrix(ct1);
+  //Panel 2
+  r2.SetAngles( 180,45,0.0);
+  TGeoTranslation t2(0,-(sr2),sr2);
+  TGeoCombiTrans ct2(t2,r2);
+  TGeoHMatrix *panel_pstn2 = new TGeoHMatrix(ct2);
+  //Panel 3
+  r3.SetAngles( 90,45,0.0);
+  TGeoTranslation t3(-(sr2), 0,sr2);
+  TGeoCombiTrans ct3(t3,r3);
+  TGeoHMatrix *panel_pstn3 = new TGeoHMatrix(ct3);
+  //Panel 4
+  r4.SetAngles( 270,45,0.0);
+  TGeoTranslation t4(sr2,0,sr2);
+  TGeoCombiTrans ct4(t4,r4);
+  TGeoHMatrix *panel_pstn4 = new TGeoHMatrix(ct4);
+  //
+  //Panel 5
+  r5.SetAngles( 45,90,90);
+  TGeoTranslation t5(-sr2,sr2,3);
+  TGeoCombiTrans ct5(t5,r5);
+  TGeoHMatrix *panel_pstn5 = new TGeoHMatrix(ct5);
+  //
+  //Panel 6
+  r6.SetAngles( 315,90,90);
+  TGeoTranslation t6(sr2,sr2,3);
+  TGeoCombiTrans ct6(t6,r6);
+  TGeoHMatrix *panel_pstn6 = new TGeoHMatrix(ct6);
+  //
+  //Panel 7
+  r7.SetAngles( 135,90,90);
+  TGeoTranslation t7(-sr2,-sr2,3);
+  TGeoCombiTrans ct7(t7,r7);
+  TGeoHMatrix *panel_pstn7 = new TGeoHMatrix(ct7);
+  //
+  //Panel 8
+  r8.SetAngles( 225,90,90);
+  TGeoTranslation t8(sr2,-sr2,3);
+  TGeoCombiTrans ct8(t8,r8);
+  TGeoHMatrix *panel_pstn8 = new TGeoHMatrix(ct8);
+  //
+  //Panel 9
+  r9.SetAngles( 0,135,0.0);
+  TGeoTranslation t9(0, sr2,sr2u);
+  TGeoCombiTrans ct9(t9,r9);
+  TGeoHMatrix *panel_pstn9 = new TGeoHMatrix(ct9);
+  //
+  //Panel 10
+  r10.SetAngles( 180,135,0.0);
+  TGeoTranslation t10(0,-(sr2),sr2u);
+  TGeoCombiTrans ct10(t10,r10);
+  TGeoHMatrix *panel_pstn10 = new TGeoHMatrix(ct10);
+  //
+  //Panel 11
+  r11.SetAngles( 90,135,0.0);
+  TGeoTranslation t11(-(sr2), 0,sr2u);
+  TGeoCombiTrans ct11(t11,r11);
+  TGeoHMatrix *panel_pstn11 = new TGeoHMatrix(ct11);
+  //
+  //Panel 12
+  r12.SetAngles( 270,135,0.0);
+  TGeoTranslation t12(sr2,0,sr2u);
+  TGeoCombiTrans ct12(t12,r12);
+  TGeoHMatrix *panel_pstn12 = new TGeoHMatrix(ct12);
+  //
+  
+  
+  
+  
+  TGeoVolume *panel = geom->MakeTrd1("PANEL",silicon,panel_dx1, panel_dx2,panel_dz,panel_dy);
+   
   //MULTIPLE PANELS
   TLitVolume *lit_panel = new TLitVolume(panel);
   lit_panel->SetDetector(kFALSE, "", 180.0, 270.);
-  //tot->AddNode(panel,1,panel_pstn1);
-  tot->AddNode(panel,1,panel_pstn2);
-  //tot->AddNode(panel,1,panel_pstn3);
+  
+  tot->AddNodeOverlap(panel,1,panel_pstn1);
+  tot->AddNodeOverlap(panel,2,panel_pstn2);
+  tot->AddNodeOverlap(panel,3,panel_pstn3);
+  tot->AddNodeOverlap(panel,4,panel_pstn4);
+  tot->AddNodeOverlap(panel,5,panel_pstn5);
+  tot->AddNodeOverlap(panel,6,panel_pstn6);
+  tot->AddNodeOverlap(panel,7,panel_pstn7);
+  tot->AddNodeOverlap(panel,8,panel_pstn8);
+  tot->AddNodeOverlap(panel,9,panel_pstn9);
+  tot->AddNodeOverlap(panel,10,panel_pstn10);
+  tot->AddNodeOverlap(panel,11,panel_pstn11);
+  tot->AddNodeOverlap(panel,12,panel_pstn12);
   
   //
   // TGeoTube fib made of plastic
