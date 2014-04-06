@@ -8,7 +8,7 @@ REQUIREMENTS:
     NOTE: If you are running on CSC, you already have git installed! Help is available at http://git-scm.com/book/en/Getting-Started-Installing-Git
 
 2. A working ROOT installation, tested with production Version 5.3.4
-    NOTE: Requires ALL prerequisites before compilation
+    NOTE: Requires ALL prerequisites (required and optional) before compilation of root
     
 3. A working installation of SLitrani
     NOTE: This isnt easy! 
@@ -46,7 +46,7 @@ Inside the SSS folder will be some files this is what they do:
     
 RUNNING SSS
 You've got this far, congratulations!
-To run SSS as I have left it is simple, just oad a terminal window in this directory and type the command: >root slitsolar.C
+To run SSS as I have left it is simple, just load a terminal window in this directory and type the command: >root slitsolar.C
 
 You'll see the splash screen and SLitrani will have been loaded. Your next step is to run the script, this can be done simply by typing: >Auto() and pressing return.
 
